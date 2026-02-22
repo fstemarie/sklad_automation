@@ -2,6 +2,9 @@
 
 set dst "/srv/mosquitto"
 
+source (status dirname)/../../log.fish
+source /data/config/restic/restic.fish
+
 echo "
 
 -------------------------------------
@@ -11,12 +14,12 @@ echo "
 "
 
 if test -z "$RESTIC_REPOSITORY"
-    echo (set_color brred)"[ERROR] RESTIC_REPOSITORY empty. Cannot proceed" >&2
-     exit 1
+    error "RESTIC_REPOSITORY empty. Cannot proceed"
+    exit 1
 end
 
-if test -z "$RESTIC_PASSWORD_FILE" || ! test -e "$RESTIC_PASSWORD_FILE" 
-    echo (set_color brred)"[ERROR] RESTIC_PASSWORD_FILE empty or does not exist. Cannot proceed" >&2
+if test -z "$RESTIC_PASSWORD_FILE"; or not test -f "$RESTIC_PASSWORD_FILE"
+    error "RESTIC_PASSWORD_FILE empty or does not exist. Cannot proceed"
     exit 1
 end
 

@@ -1,9 +1,3 @@
-# Ajoute un timestamp à un chemin pour éviter les conflits de noms de fichiers
-function add_timestamp -a thepath \
-    --description 'Ajoute un timestamp au chemin'
-    return $thepath"."(date +%s)
-end
-
 # Verifie si un conteneur docker est en cours d'exécution en fonction de son nom
 function is_container_running -a container_name \
     --description 'Check if a docker container is running'

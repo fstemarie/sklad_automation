@@ -1,45 +1,57 @@
 #! /usr/bin/fish
 
-set src "/l/backup/sklad/home"
-# Append date to destination name to avoid data loss
-set dst "$HOME/home."(date +%s)
-set arch (command ls -1dr $src/home.*.tgz | head -n1)
-set script (status basename)
+set src "/l/backup/sklad/home" # Variable qui contient le chemin vers le dossier de sauvegarde
+set dst "$HOME/home."(date +%s) # Variable qui contient le chemin vers le dossier de destination
+set arch (command ls -1dr $src/home.*.tar.zst | head -n1) # Variable qui contient le chemin vers l'archive de sauvegarde la plus récente
 
+source (status dirname)/../../log.fish # Source du script de log pour pouvoir utiliser les fonctions de log
+
+# Ecrit l'entete du log pour cette execution du script
 echo "
 
 -------------------------------------
-[[ Running $script ]]
+[[ Execution de "(status filename)" ]]
 "(date -Iseconds)"
 -------------------------------------
-"
+" | tee -a $log
 
-# if archive does not exist, exit
-if test ! -f "$arch"
-    echo (set_color brred)"[ERROR] Archive not found" >&2
+# Si l'archive n'existe pas, affiche une erreur et quitte le script
+info "Verification de l'existence de l'archive"
+if test -f "$arch"
+    success "Archive trouvée : $arch"
+else
+    error "Archive introuvable"
     exit 1
 end
-echo "Using archive: $arch"
 
-# if target destination does not exist, create it
-if test ! -d "$dst"
-    echo "Creating non-existing destination: $dst"
-    mkdir -p "$dst"
-    if test $status -ne 0
-        echo (set_color brred)"[ERROR] Cannot create missing destination. Exiting..." >&2
-        exit 1
+# Si la destination existe déjà, alors on ajoute un timestamp au nom pour éviter la perte de données
+info "Verification de l'existence de la destination"
+set original_dst "$dst"
+while test -d "$dst"
+    set dst "original_dst."(date +%s)
+    if not test -d "$dst"
+        warning "La destination existe déjà. Nous ajoutons un timestamp pour éviter la perte de données"
+        break
     end
 end
-
-# Recover data from archive
-echo "Recovering..."
-tar --extract --verbose --gzip \
-    --file="$arch" \
-    --directory="$dst" \
-    --strip=1 2>&1 | tee -a $log
-    --strip=1 
-if test $status -ne 0
-    echo (set_color brred)"[ERROR] Recovery unsuccessful" >&2
+# Cree la destination
+info "Creation de la destination"
+mkdir -p "$dst"
+if test $status -eq 0
+    success "La destination a été créée avec succès"
+else
+    error "Impossible de créer la destination"
     exit 1
 end
-echo "The recovery was successful"
+
+# Restauration de l'archive
+info "Restauration de l'archive $arch"
+tar --extract --verbose --zstd \
+    --file "$arch" \
+    --directory "$dst" \
+    --strip 1 2>&1 | tee -a $log
+if test $status -ne 0
+    error "La restauration a échoué"
+    exit 1
+end
+success "La restauration a réussi"

@@ -1,47 +1,60 @@
 #! /usr/bin/fish
 
-set src "/l/backup/sklad/jellyfin"
-set dst "/srv/jellyfin"
-set arch (command ls -1dr $src/jellyfin.*.tgz | head -n1)
-set script (status basename)
+set src "/l/backup/sklad/jellyfin" # Variable qui contient le chemin vers le dossier de sauvegarde
+set dst "/srv/jellyfin" # Variable qui contient le chemin vers le dossier de destination de la sauvegarde
+set arch (command ls -1dr $src/jellyfin.*.tar.zst | head -n1) # Variable qui contient le chemin vers l'archive de sauvegarde la plus récente
 
-# if archive does not exist, exit
-if test ! -f "$arch"
-    echo (set_color brred)"[ERROR] Archive not found" >&2
+source (status dirname)/../../log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
+
+# Ecrit l'entete du log pour cette execution du script
+echo "
+
+-------------------------------------
+[[ Execution de "(status filename)" ]]
+"(date -Iseconds)"
+-------------------------------------
+" | tee -a $log
+
+# Si l'archive n'existe pas, affiche une erreur et quitte le script
+info "Verification de l'existence de l'archive"
+if test -f "$arch"
+    success "Archive trouvée : $arch"
+else
+    error "Archive introuvable"
     exit 1
 end
 
-# Append date to name to avoid data loss
-if test -d "$dst"
-    echo "Destination already exists"
-
-    set old "$dst"
-    set dst "$old."(date +%s)
-    while test -d "$dst"
-        sleep 2
-        set dst "$old."(date +%s)
+# Si la destination existe déjà, alors on ajoute un timestamp au nom pour éviter la perte de données
+info "Verification de l'existence de la destination"
+set original_dst "$dst"
+while test -d "$dst"
+    set dst "original_dst."(date +%s)
+    if not test -d "$dst"
+        warning "La destination existe déjà. Nous ajoutons un timestamp pour éviter la perte de données"
+        break
     end
 end
-
-# Create non-existing destination
-echo "Creating non-existing destination"
+# Cree la destination
+info "Creation de la destination"
 mkdir -p "$dst"
-if test $status -ne 0
-    echo (set_color brred)"[ERROR] Cannot create missing destination. Exiting..." >&2
+if test $status -eq 0
+    success "La destination a été créée avec succès"
+else
+    error "Impossible de créer la destination"
     exit 1
 end
 
-# Recover data from archive
-echo "Recovering..."
-tar --extract --verbose --gzip \
+# Restauration de l'archive
+info "Restauration de l'archive $arch"
+tar --extract --verbose --zstd \
     --same-owner \
     --same-permissions \
-    --file="$arch" \
-    --directory="$dst" \
-    --strip=1 2>&1 | tee -a $log
-    --strip=1 
-if test $status -ne 0
-    echo (set_color brred)"[ERROR] Recovery unsuccessful" >&2
+    --file "$arch" \
+    --directory "$dst" \
+    --strip 1 2>&1 | tee -a $log
+if test $pipestatus[1] -ne 0
+    error "La restauration a échouée"
     exit 1
 end
-echo "The recovery was successful"
+success "La restauration a réussie"
+

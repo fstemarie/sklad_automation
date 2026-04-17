@@ -1,55 +1,68 @@
 #! /usr/bin/fish
 
-set src "/data/automation"
-set dst "/l/backup/sklad/automation"
-set arch "$dst/automation."(date +%Y%m%dT%H%M%S | tr -d :-)".tgz"
-set log "/var/log/automation/automation.tar.log"
-set nb_max 1
-set dir (dirname "$src")
-set base (basename "$src")
-set script (status basename)
+set src "/data/automation" # Variable qui contient le chemin du dossier à sauvegarder
+set dst "/l/backup/sklad/automation"  # Variable qui contient le chemin du dossier de destination où les sauvegardes seront stockées
+set arch "$dst/automation."(date +%Y%m%dT%H%M%S | tr -d :-)".tar.zst"  # Variable qui contient le chemin complet du fichier d'archive à créer, avec un nom basé sur la date et l'heure actuelles
+set log "/var/log/automation/automation.tar.log" # Variable qui contient le chemin du fichier de log où les messages d'information et d'erreur seront enregistrés
+set nb_max 5 # Variable qui contient le nombre maximum de sauvegardes à conserver, utilisée pour supprimer les anciennes sauvegardes si nécessaire
 
-source (status dirname)/../../log.fish
+source (status dirname)/../../log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
+source (status dirname)/../../tools.fish # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
 
+# Ecrit l'entete du log pour cette execution du script
 echo "
 
 -------------------------------------
-[[ Running $script ]]
+[[ Running "(status filename)" ]]
 "(date -Iseconds)" 
 -------------------------------------
 " | tee -a $log
 
-# if the source folder doesn't exist, then there is nothing to backup
-if test ! -d "$src"
-    error "Source folder does not exist"
+info "Sauvegarde du dossier $src vers $dst" true
+
+#region Vérifie que la source existe et vérifie que la destination existe
+# Si le dossier source n'existe pas, alors il n'y a rien à sauvegarder
+info "Vérification de l'existence du dossier source et du dossier de destination"
+if test -d "$src"
+    success "Le dossier source existe"
+else
+    error "Le dossier source n'existe pas" true
     exit 1
 end
 
-# if the destination folder does not exist, create it
-if test ! -d "$dst"
-    log "Creating non-existing destination"
+# Si le dossier de destination n'existe pas, le créer
+if test -d "$dst"
+    success "Le dossier de destination existe"
+else
+    info "Création du dossier de destination manquant"
     mkdir -p "$dst"
-    if test $status -ne 0
-        error "Cannot create missing destination. Exiting..."
+    if test $status -eq 0
+        success "Dossier de destination créé avec succès"
+    else
+        error "Ne peut pas créer le dossier de destination manquant." true
         exit 1
     end
 end
+#endregion
 
-info "Creating archive $arch"
-tar --create --verbose --gzip \
-    --file="$arch" \
-    --directory="$dir" "$base"  2>&1 | tee -a $log
-if test $status -ne 0
-    error "Backup unsuccessful"
+# Creation de l'archive
+info "Creation de l'archive $arch" true
+tar --create --verbose --zstd \
+    --file "$arch" \
+    --directory (dirname $src) \
+    (basename $src) 2>&1 | tee -a $log
+# Vérifie si la commande tar a réussi
+if test $pipestatus[1] -ne 0
+    error "La sauvegarde a échoué" true
     exit 1
 end
-info "The backup was successful"
+success "La sauvegarde a réussi" true
 
-alias backups="command ls -1trd $dst/automation.*.tgz"
-set nb_tot (backups | count)
-set nb_diff (math $nb_tot - $nb_max)
-if test $nb_diff -gt 0
-    info "Removing older archives"
-    backups | head -n$nb_diff | tee -a $log
-    backups | head -n$nb_diff | xargs rm -f > /dev/null 
+#Supprime les anciennes sauvegardes en gardant au maximum $nb_max sauvegardes
+info "Suppression des anciennes sauvegardes"
+delete_old_backups "$dst/automation.*.tar.zst" $nb_max
+if test $status -eq 0
+    success "Anciennes sauvegardes supprimées avec succès"
+else
+    error "Impossible de supprimer les anciennes sauvegardes"
 end

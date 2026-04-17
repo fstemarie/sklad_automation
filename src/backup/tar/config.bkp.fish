@@ -45,11 +45,11 @@ if test $status -ne 0
 end
 log "The backup was successful"
 
-alias backups="command ls -1trd $dst/config.*.tgz"
-set nb_tot (backups | count)
-set nb_diff (math $nb_tot - $nb_max)
-if test $nb_diff -gt 0
-    info "Removing older archives"
-    backups | head -n$nb_diff | tee -a $log
-    backups | head -n$nb_diff | xargs rm -f > /dev/null
+#Supprime les anciennes sauvegardes en gardant au maximum $nb_max sauvegardes
+info "Suppression des anciennes sauvegardes"
+delete_old_backups "$dst/automation.*.tar.zst" $nb_max
+if test $status -eq 0
+    success "Anciennes sauvegardes supprimées avec succès"
+else
+    error "Impossible de supprimer les anciennes sauvegardes"
 end

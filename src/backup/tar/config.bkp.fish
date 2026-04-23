@@ -7,14 +7,19 @@ set arch "$dst/config."(date +%Y%m%dT%H%M%S | tr -d :-)".tar.zst" # Le nom de l'
 set log "/var/log/automation/config.tar.log" # Le fichier de log, doit être un fichier existant ou qui peut être créé
 set nb_max 5 # Le nombre maximum d'archives à conserver, les plus anciennes seront supprimées
 
-source (status dirname)/../../log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
-source (status dirname)/../../tools.fish # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
+if test (status dirname) = "/data/automation"
+    source /data/automation/log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
+    source /data/automation/tools.fish # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
+else
+    source /home/francois/development/automation/src/log.fish
+    source /home/francois/development/automation/src/tools.fish
+end
 
 # Ecrit l'entete du log pour cette execution du script
 echo "
 
 -------------------------------------
-[[ Execution de "(status filename)" ]]
+[[ Execution de "(status basename)" ]]
 "(date -Iseconds)"
 -------------------------------------
 " | tee -a $log
@@ -61,5 +66,5 @@ delete_old_backups "$dst/config.*.tar.zst" $nb_max
 if test $status -eq 0
     success "Anciennes sauvegardes supprimées avec succès"
 else
-    error "Impossible de supprimer les anciennes sauvegardes"
+    warning "Impossible de supprimer les anciennes sauvegardes"
 end

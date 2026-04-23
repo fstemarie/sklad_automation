@@ -6,14 +6,19 @@ set arch "$dst/automation."(date +%Y%m%dT%H%M%S | tr -d :-)".tar.zst"  # Variabl
 set log "/var/log/automation/automation.tar.log" # Variable qui contient le chemin du fichier de log où les messages d'information et d'erreur seront enregistrés
 set nb_max 5 # Variable qui contient le nombre maximum de sauvegardes à conserver, utilisée pour supprimer les anciennes sauvegardes si nécessaire
 
-source (status dirname)/../../log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
-source (status dirname)/../../tools.fish # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
+if test (status dirname) = "/data/automation"
+    source /data/automation/log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
+    source /data/automation/tools.fish # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
+else
+    source /home/francois/development/automation/src/log.fish
+    source /home/francois/development/automation/src/tools.fish
+end
 
 # Ecrit l'entete du log pour cette execution du script
 echo "
 
 -------------------------------------
-[[ Running "(status filename)" ]]
+[[ Execution de  "(status basename)" ]]
 "(date -Iseconds)" 
 -------------------------------------
 " | tee -a $log
@@ -64,5 +69,5 @@ delete_old_backups "$dst/automation.*.tar.zst" $nb_max
 if test $status -eq 0
     success "Anciennes sauvegardes supprimées avec succès"
 else
-    error "Impossible de supprimer les anciennes sauvegardes"
+    warning "Impossible de supprimer les anciennes sauvegardes"
 end

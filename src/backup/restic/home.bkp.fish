@@ -1,62 +1,80 @@
 #! /usr/bin/fish
 
-set src "$HOME"
-set log "/var/log/automation/home.restic.log"
-set script (status basename)
+set src "/home/francois" # La source a sauvegarder
+set log "/var/log/automation/home.restic.log" # Le fichier de log
 
-source (status dirname)/../../log.fish
-source /data/config/restic/restic.fish
+# inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
+if test (status dirname) = "/data/automation"
+    source /data/automation/log.fish
+else
+    source /home/francois/development/automation/src/log.fish
+end # Inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
 
+# Ecrit l'entete du log pour cette execution du script
 echo "
 
-
 -------------------------------------
-[[ Running $script ]]
+[[ Execution de "(status basename)" ]]
 "(date -Iseconds)"
 -------------------------------------
 " | tee -a $log
 
-# if the source folder doesn't exist, then there is nothing to backup
-if test ! -d "$src"
-    error "Source folder does not exist. Cannot proceed"
+#region Verifie que les variables d'environnement nécessaires sont définies et valides
+# Verifie que la variable d'environnement RESTIC_REPOSITORY est définie et n'est pas vide
+info "Vérification de la variable d'environnement RESTIC_REPOSITORY"
+if test -n "$RESTIC_REPOSITORY"
+    success "RESTIC_REPOSITORY est definie"
+else
+    error "RESTIC_REPOSITORY est non defini"
     exit 1
 end
-info "Source folder: $src"
-
-if test -z "$RESTIC_REPOSITORY"
-    error "RESTIC_REPOSITORY empty. Cannot proceed"
+# Verifie que le fichier de mot de passe existe et n'est pas vide
+info "Vérification de la variable d'environnement RESTIC_PASSWORD_FILE"
+if test -n "$RESTIC_PASSWORD_FILE"; and test -e "$RESTIC_PASSWORD_FILE"
+    success "RESTIC_PASSWORD_FILE est definie et existe"
+else
+    error "RESTIC_PASSWORD_FILE vide ou n'existe pas"
     exit 1
 end
-
-if test -z "$RESTIC_PASSWORD_FILE"; or not test -f "$RESTIC_PASSWORD_FILE"
-    error "RESTIC_PASSWORD_FILE empty or does not exist. Cannot proceed"
+# Verifie que le dossier source existe
+info "Vérification de l'existence du dossier source"
+if test -d "$src"
+    success "Le dossier source existe"
+else
+    error "Le dossier source n'existe pas"
     exit 1
 end
+#endregion
 
-info "Creating restic snapshot"
+# Crée un snapshot avec restic en excluant les dossiers et fichiers qui ne sont pas nécessaires
+info "Creation du snapshot restic"
 pushd "$src"
 restic backup \
-    --tag=home \
-    --exclude='.cache' \
-    --exclude='.vscode*' \
-    --exclude='devel' \
-    --exclude='development'\
+    --host $hostname \
+    --tag home \
+    --exclude '.cache' \
+    --exclude '.vscode*' \
+    --exclude 'development'\
     .  2>&1 | tee -a $log
-if test $status -ne 0
-    error "There was an error during the snapshot"
+# Vérifie si la commande backup a réussi
+if test $pipestatus[1] -ne 0
+    error "Il y a eu une erreur lors de la création du snapshot"
     exit 1
 end
 popd
-log "Snapshot created successfully"
+success "Le snapshot a été créé avec succès"
 
-info "Forgetting snapshots"
+# Supprime les snapshots plus anciens que 4 semaines en gardant au moins un snapshot par semaine
+info "Effacement des snapshots"
 restic forget \
-    --tag=home \
-    --keep-daily=1 \
-    --keep-weekly=4 \
-    --keep-monthly=6  2>&1 | tee -a $log
-if test $status -ne 0
-    error "Unable to forget snapshots"
+    --host $hostname \
+    --tag home \
+    --keep-daily 7 \
+    --keep-weekly 4 \
+    --keep-monthly 6 2>&1 | tee -a $log
+# Vérifie si la commande forget a réussi
+if test $pipestatus[1] -ne 0
+    error "La suppression des snapshots a échouée"
     exit 1
 end
-info "Snapshots forgotten successfully"
+success "La suppression des snapshots a réussie"

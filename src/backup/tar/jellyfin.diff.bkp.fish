@@ -7,14 +7,19 @@ set arch "$dst/jellyfin.diff.tar.zst" # Variable qui contient le chemin de l'arc
 set snar "$dst/jellyfin.diff.snar" # Variable qui contient le chemin du fichier de snapshot pour les sauvegardes différentielles
 set log "/var/log/automation/jellyfin.tar.log" # Variable qui contient le chemin du fichier de log
 
-source (status dirname)/../../log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
-source (status dirname)/../../tools.fish # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
+if test (status dirname) = "/data/automation"
+    source /data/automation/log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
+    source /data/automation/tools.fish # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
+else
+    source /home/francois/development/automation/src/log.fish
+    source /home/francois/development/automation/src/tools.fish
+end
 
 # Ecrit l'entete du log pour cette execution du script
 echo "
 
 -------------------------------------
-[[ Execution de "(status filename)" ]]
+[[ Execution de "(status basename)" ]]
 "(date -Iseconds)"
 -------------------------------------
 " | tee -a $log
@@ -80,7 +85,7 @@ end
 success "La sauvegarde a réussi"
 
 # Redémarre le container s'il avait été arrêté précédemment
-if set -q restart_container
+if set -q $restart_container
     info "Démarrage du container $container_name"
     start_container $container # Si la variable restart_container est définie, cela signifie que le container était en cours d'exécution avant d'être arrêté, donc on le redémarre
     if test $status -eq 0
@@ -93,3 +98,8 @@ end
 # Supprime le fichier de snapshot de la sauvegarde différentielle qui ne sera jamais utilisé
 info "Suppression du snapshot de la sauvegarde différentielle"
 sudo rm -f "$snar" 2>&1 | tee -a $log
+if test $pipestatus[1] -eq 0
+    success "La suppression a réussi"
+else
+    warning "La suppression a échoué"
+end

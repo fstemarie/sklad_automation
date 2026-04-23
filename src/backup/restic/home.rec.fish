@@ -1,45 +1,64 @@
 #! /usr/bin/fish
 
 # Append date to destination name to avoid data loss
-set dst "$HOME/home."(date +%s)
 
-source (status dirname)/../../log.fish
-source /data/config/restic/restic.fish
+# Note: Ce script est destiné à être utilisé à des fins de récupération. Il ne remplacera pas les données existantes, mais créera plutôt un nouveau répertoire avec un horodatage. Cela vous permet de conserver plusieurs versions de votre répertoire de développement et d'éviter toute perte de données accidentelle.
+set dst "/home/francois/home."(date +%s) # Destination finale pour la restauration. Un timestamp sera ajouté si ce dossier existe déjà pour éviter les conflits de noms
+set log "/var/log/automation/home.restic.rec.log" # Variable qui contient la destination ou ecrire le log
 
+# inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
+if test (status dirname) = "/data/automation"
+    source /data/automation/log.fish
+else
+    source /home/francois/development/automation/src/log.fish
+end
+
+# Ecrit l'entete du log pour cette execution du script
 echo "
 
 -------------------------------------
-[[ Running $script ]]
+[[ Execution de "(status basename)" ]]
 "(date -Iseconds)"
 -------------------------------------
-"
+" | tee -a $log
 
-if test -z "$RESTIC_REPOSITORY"
-    error "RESTIC_REPOSITORY empty. Cannot proceed"
+#region Verifie que les variables d'environnement nécessaires sont définies et valides
+# Verifie que la variable d'environnement RESTIC_REPOSITORY est défini et n'est pas vide
+info "Vérification de la variable d'environnement RESTIC_REPOSITORY"
+if test -n "$RESTIC_REPOSITORY"
+    success "RESTIC_REPOSITORY est defini"
+else
+    error "RESTIC_REPOSITORY est non defini"
     exit 1
 end
-
-if test -z "$RESTIC_PASSWORD_FILE"; or not test -f "$RESTIC_PASSWORD_FILE"
-    error "RESTIC_PASSWORD_FILE empty or does not exist. Cannot proceed"
+# Verifie que le fichier de mot de passe existe et n'est pas vide
+if test -n "$RESTIC_PASSWORD_FILE"; and test -e "$RESTIC_PASSWORD_FILE"
+    success "RESTIC_PASSWORD_FILE est defini et existe"
+else
+    error "RESTIC_PASSWORD_FILE vide ou n'existe pas"
     exit 1
 end
+#endregion
 
-# if target destination does not exist, create it
-if test ! -d "$dst"
-    echo "Creating non-existing destination"
-    mkdir -p "$dst"
-    if test $status -ne 0
-        echo (set_color brred)"[ERROR] Cannot create missing destination. Exiting..." >&2
-        exit 1
+# Si la destination existe déjà, alors on ajoute un timestamp au nom pour éviter la perte de données
+info "Verification de l'existence de la destination"
+set original_dst "$dst"
+while test -d "$dst"
+    set dst "$original_dst."(date +%s)
+    if not test -d "$dst"
+        warning "La destination existe déjà. Nous ajoutons un timestamp pour éviter la perte de données"
+        break
     end
 end
 
-# Recover data from archive
+# Recupere les données de l'archive
+info "Recuperation du snapshot restic"
 restic restore latest \
-    --tag=home \
+    --host $hostname \
+    --tag home \
     --target "$dst"
-if test $status -ne 0
-    echo (set_color brred)"[ERROR] Could not restore snapshot" >&2
+if test $pipestatus[1] -ne 0
+    error "La restauration du snapshot a échoué"
     exit 1
 end
-echo "Snapshot restoration successful"
+success "La restauration du snapshot a réussi"

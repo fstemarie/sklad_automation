@@ -6,7 +6,13 @@ set dst "bedroom:/media/256gb/podcasts/"
 set log "/var/log/automation/podcasts.rsync.log"
 set script (status basename)
 
-source (status dirname)/../../log.fish
+# inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
+if test (status dirname) = "/data/automation"
+    source /data/automation/log.fish
+else
+    source /home/francois/development/automation/src/log.fish
+end
+
 umask 0122
 
 echo "

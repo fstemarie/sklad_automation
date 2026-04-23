@@ -8,14 +8,19 @@ set snar "$dst/jellyfin.full.snar" # Variable qui contient le chemin du fichier 
 set log "/var/log/automation/jellyfin.tar.log" # Le fichier de log, doit être un fichier existant ou qui peut être créé
 set nb_max 5 # Le nombre maximum d'archives à conserver, les plus anciennes seront supprimées
 
-source (status dirname)/../../log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
-source (status dirname)/../../tools.fish # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
+if test (status dirname) = "/data/automation"
+    source /data/automation/log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
+    source /data/automation/tools.fish # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
+else
+    source /home/francois/development/automation/src/log.fish
+    source /home/francois/development/automation/src/tools.fish
+end
 
 # Ecrit l'entete du log pour cette execution du script
 echo "
 
 -------------------------------------
-[[ Execution de "(status filename)" ]]
+[[ Execution de "(status basename)" ]]
 "(date -Iseconds)"
 -------------------------------------
 " | tee -a $log
@@ -44,19 +49,6 @@ else
     end
 end
 #endregion
-
-# stop the container
-set container (docker container ps --filter="name=$base" --format='{{.Names}}')
-if contains "$container" "$base"
-    set -g restart
-    info "Stopping container $container"
-    docker container stop "$container" > /dev/null
-    if test $status -ne 0
-        error "Unable to stop container $container"
-        exit 1
-    end
-    docker wait "$container" > /dev/null
-end
 
 # C'est une nouvelle sauvegarde complète, donc on supprime les anciens fichiers de snapshot
 info "Suppression du fichier de snapshot"
@@ -95,7 +87,7 @@ end
 success "La sauvegarde a réussi"
 
 # Redémarre le container s'il avait été arrêté précédemment
-if set -q restart_container
+if set -q $restart_container
     info "Démarrage du container $container_name"
     start_container $container # Si la variable restart_container est définie, cela signifie que le container était en cours d'exécution avant d'être arrêté, donc on le redémarre
     if test $status -eq 0
@@ -115,5 +107,5 @@ delete_old_backups "$dst/jellyfin.*.tar.zst" $nb_max
 if test $status -eq 0
     success "Anciennes sauvegardes supprimées avec succès"
 else
-    error "Impossible de supprimer les anciennes sauvegardes"
+    warning "Impossible de supprimer les anciennes sauvegardes"
 end

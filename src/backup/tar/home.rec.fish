@@ -4,13 +4,19 @@ set src "/l/backup/sklad/home" # Variable qui contient le chemin vers le dossier
 set dst "$HOME/home."(date +%s) # Variable qui contient le chemin vers le dossier de destination
 set arch (command ls -1dr $src/home.*.tar.zst | head -n1) # Variable qui contient le chemin vers l'archive de sauvegarde la plus récente
 
-source (status dirname)/../../log.fish # Source du script de log pour pouvoir utiliser les fonctions de log
+if test (status dirname) = "/data/automation"
+    source /data/automation/log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
+    source /data/automation/tools.fish # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
+else
+    source /home/francois/development/automation/src/log.fish
+    source /home/francois/development/automation/src/tools.fish
+end
 
 # Ecrit l'entete du log pour cette execution du script
 echo "
 
 -------------------------------------
-[[ Execution de "(status filename)" ]]
+[[ Execution de "(status basename)" ]]
 "(date -Iseconds)"
 -------------------------------------
 " | tee -a $log
@@ -28,7 +34,7 @@ end
 info "Verification de l'existence de la destination"
 set original_dst "$dst"
 while test -d "$dst"
-    set dst "original_dst."(date +%s)
+    set dst "$original_dst."(date +%s)
     if not test -d "$dst"
         warning "La destination existe déjà. Nous ajoutons un timestamp pour éviter la perte de données"
         break

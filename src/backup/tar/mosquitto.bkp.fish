@@ -1,3 +1,4 @@
+# @fish-lsp-disable 4004
 #! /usr/bin/fish
 
 set src "/srv/mosquitto" # Variable qui contient le chemin du dossier de sauvegarde
@@ -7,14 +8,19 @@ set arch "$dst/mosquitto."(date +%Y%m%dT%H%M%S | tr -d :-)".tar.zst" # Variable 
 set log "/var/log/automation/mosquitto.tar.log" # Variable qui contient le chemin du fichier de log
 set nb_max 5 # Variable qui contient le nombre maximum d'archives à conserver
 
-source (status dirname)/../../log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
-source (status dirname)/../../tools.fish # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
+if test (status dirname) = "/data/automation"
+    source /data/automation/log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
+    source /data/automation/tools.fish # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
+else
+    source /home/francois/development/automation/src/log.fish
+    source /home/francois/development/automation/src/tools.fish
+end
 
 # Ecrit l'entete du log pour cette execution du script
 echo "
 
 -------------------------------------
-[[ Execution de "(status filename)" ]]
+[[ Execution de "(status basename)" ]]
 "(date -Iseconds)"
 -------------------------------------
 " | tee -a $log
@@ -72,13 +78,13 @@ end
 success "La sauvegarde a réussi"
 
 # Redémarre le container s'il avait été arrêté précédemment
-if set -q restart_container
+if set -q $restart_container
     info "Démarrage du container $container_name"
     start_container $container # Si la variable restart_container est définie, cela signifie que le container était en cours d'exécution avant d'être arrêté, donc on le redémarre
     if test $status -eq 0
         success "Container $container_name démarré avec succès"
     else
-        error "Impossible de démarrer le container $container_name"
+        warning "Impossible de démarrer le container $container_name"
     end
 end
 
@@ -88,5 +94,5 @@ delete_old_backups "$dst/mosquitto.*.tar.zst" $nb_max
 if test $status -eq 0
     success "Anciennes sauvegardes supprimées avec succès"
 else
-    error "Impossible de supprimer les anciennes sauvegardes"
+    warning "Impossible de supprimer les anciennes sauvegardes"
 end

@@ -1,6 +1,6 @@
 #! /usr/bin/env fish
 
-set src "/d/sapphire/backup/"
-set dst "filelu:/backup-mirror"
+set src "/l/backup/"
+set dst "filelu:/backup/mirror/"
 
-rclone sync "$src" "$dst"
+rclone sync -P "$src" "$dst"

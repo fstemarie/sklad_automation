@@ -67,7 +67,7 @@ info "Creation de l'archive $arch"
 tar --create --verbose --zstd \
     --file "$arch" \
     --exclude '__pycache__' --exclude '.git' --exclude '.local' \
-    --exclude '.venv' --exclude '.cache' \
+    --exclude '.venv' --exclude '.cache' --exclude "logs" \
     --directory (dirname $src) \
     (basename $src)  2>&1 | tee -a $log
 # Vérifie si la commande tar a réussi

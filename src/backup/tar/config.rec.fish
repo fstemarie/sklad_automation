@@ -5,9 +5,9 @@ set dst "/data/config" # Variable qui contient le chemin du dossier de destinati
 set arch (command ls -1dr $src/config.*.tar.zst | head -n1) # Variable qui contient le chemin de l'archive la plus récente
 
 if test (status dirname) = "/data/automation"
-    source /data/automation/log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
+    source /data/automation/tools/log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
 else
-    source /home/francois/development/automation/src/log.fish
+    source /home/francois/development/automation/src/tools/log.fish
 end
 
 # Ecrit l'entete du log pour cette execution du script

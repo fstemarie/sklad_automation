@@ -8,9 +8,9 @@ set log "/var/log/automation/home.restic.rec.log" # Variable qui contient la des
 
 # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
 if test (status dirname) = "/data/automation"
-    source /data/automation/log.fish
+    source /data/automation/tools/log.fish
 else
-    source /home/francois/development/automation/src/log.fish
+    source /home/francois/development/automation/src/tools/log.fish
 end
 
 # Ecrit l'entete du log pour cette execution du script

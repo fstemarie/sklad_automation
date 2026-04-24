@@ -8,9 +8,9 @@ set script (status basename)
 
 # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
 if test (status dirname) = "/data/automation"
-    source /data/automation/log.fish
+    source /data/automation/tools/log.fish
 else
-    source /home/francois/development/automation/src/log.fish
+    source /home/francois/development/automation/src/tools/log.fish
 end
 
 umask 0122

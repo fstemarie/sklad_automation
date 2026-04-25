@@ -1,0 +1,16 @@
+{
+    "fish-lsp.workspaceFolders": [
+        "/home/francois/development/automation/src"
+    ],
+    "files.associations": {
+        "*.fish.git": "plaintext"
+    },
+    "fish-lsp.initializationOptions": {
+        "fish_lsp_ignore_paths": [
+            "**/.git/**",
+            "**/*.git",
+            "**/node_modules/**"
+        ],
+    "fish_lsp_diagnostic_disable_error_codes": [1004, 2003, 4004]
+  }
+}

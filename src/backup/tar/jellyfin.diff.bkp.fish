@@ -4,12 +4,13 @@ set src "/srv/jellyfin" # Variable qui contient le chemin du dossier de sauvegar
 set dst "/l/backup/sklad/jellyfin" # Variable qui contient le chemin du dossier de destination
 set container (basename $src) # Variable qui contient le nom du container à arrêter et redémarrer pendant la sauvegarde
 set arch "$dst/jellyfin.diff.tar.zst" # Variable qui contient le chemin de l'archive à créer, avec un nom basé sur la date et l'heure
-set snar "$dst/jellyfin.diff.snar" # Variable qui contient le chemin du fichier de snapshot pour les sauvegardes différentielles
+set full_snar "$dst/jellyfin.full.snar" # Variable qui contient le chemin du fichier de snapshot 
+set diff_snar "$dst/jellyfin.diff.snar" # Variable qui contient le chemin du fichier de snapshot
 set log "/var/log/automation/jellyfin.tar.log" # Variable qui contient le chemin du fichier de log
 
 if test (status dirname) = "/data/automation"
-    source /data/automation/tools/log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
-    source /data/automation/tools/containers.fish # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
+    source /data/automation/tools/log.fish # fonctions d'écriture de log
+    source /data/automation/tools/containers.fish # fonctions reliees aux containers
 else
     source /home/francois/development/automation/src/tools/log.fish
     source /home/francois/development/automation/src/tools/containers.fish
@@ -54,7 +55,7 @@ end
 # Donc, si on veut une sauvegarde différentielle, on doit utiliser le fichier de snapshot de la sauvegarde complète précédente pour ne sauvegarder que les fichiers qui ont changé depuis la dernière sauvegarde complète
 # Si on utilisait le fichier de snapshot de la sauvegarde différentielle précédente, nous aurions une sauvegarde incrémentale
 info "Copie le fichier de snapshot de la sauvegarde complète précédente pour l'utiliser comme base pour la sauvegarde différentielle"
-cp -f "$dst/jellyfin.full.snar" "$snar" 2>&1 | tee -a $log
+cp -f "$full_snar" "$diff_snar" 2>&1 | tee -a $log
 
 # Arrête le container s'il est en cours d'exécution pour éviter les problèmes de fichiers ouverts pendant la sauvegarde
 if is_container_running $container
@@ -72,7 +73,7 @@ end
 # Creation de l'archive
 info "Creation de l'archive $arch"
 tar --create --zstd \
-    --listed-incremental "$snar" \
+    --listed-incremental "$diff_snar" \
     --exclude 'cache' --exclude 'log' --exclude '.aspnet' \
     --file "$arch" \
     --directory (dirname $src) \
@@ -97,7 +98,7 @@ end
 
 # Supprime le fichier de snapshot de la sauvegarde différentielle qui ne sera jamais utilisé
 info "Suppression du snapshot de la sauvegarde différentielle"
-sudo rm -f "$snar" 2>&1 | tee -a $log
+sudo rm -f "$diff_snar" 2>&1 | tee -a $log
 if test $pipestatus[1] -eq 0
     success "La suppression a réussi"
 else

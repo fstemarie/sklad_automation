@@ -23,7 +23,7 @@ echo "
 -------------------------------------
 " | tee -a $log
 
-info "Sauvegarde du dossier $src vers $dst" true
+info "Sauvegarde du dossier $src vers $dst"
 
 #region Vérifie que la source existe et vérifie que la destination existe
 # Si le dossier source n'existe pas, alors il n'y a rien à sauvegarder
@@ -31,7 +31,7 @@ info "Vérification de l'existence du dossier source et du dossier de destinatio
 if test -d "$src"
     success "Le dossier source existe"
 else
-    error "Le dossier source n'existe pas" true
+    error "Le dossier source n'existe pas"
     exit 1
 end
 
@@ -44,24 +44,24 @@ else
     if test $status -eq 0
         success "Dossier de destination créé avec succès"
     else
-        error "Ne peut pas créer le dossier de destination manquant." true
+        error "Ne peut pas créer le dossier de destination manquant."
         exit 1
     end
 end
 #endregion
 
 # Creation de l'archive
-info "Creation de l'archive $arch" true
+info "Creation de l'archive $arch"
 tar --create --verbose --zstd \
     --file "$arch" \
     --directory (dirname $src) \
     (basename $src) 2>&1 | tee -a $log
 # Vérifie si la commande tar a réussi
 if test $pipestatus[1] -ne 0
-    error "La sauvegarde a échoué" true
+    error "La sauvegarde a échoué"
     exit 1
 end
-success "La sauvegarde a réussi" true
+success "La sauvegarde a réussi"
 
 #Supprime les anciennes sauvegardes en gardant au maximum $nb_max sauvegardes
 info "Suppression des anciennes sauvegardes"

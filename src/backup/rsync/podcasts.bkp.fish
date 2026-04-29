@@ -1,10 +1,9 @@
 #! /usr/bin/fish
 
-set src "/l/audio/podcasts/"
 # add bedroom to ~/.ssh/config
+set src "/l/audio/podcasts/"
 set dst "bedroom:/media/256gb/podcasts/"
-set log "/var/log/automation/podcasts.rsync.log"
-set script (status basename)
+set log "/var/log/automation/podcasts.rsync.trx.log"
 
 # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
 if test (status dirname) = "/data/automation"
@@ -13,58 +12,40 @@ else
     source /home/francois/development/automation/src/tools/log.fish
 end
 
-umask 0122
-
+# Ecrit l'entete du log pour cette execution du script
 echo "
 
-
 -------------------------------------
-[[ Running $script ]]
-"(date -Iseconds)"
+[[ Execution de "(status basename)" ]]
+"(date -Iseconds)" 
 -------------------------------------
 " | tee -a $log
 
-# if the source folder doesn't exist, then there is nothing to backup
-if test ! -d "$src"
-    log "Source folder does not exist"
+info "Transfer du dossier $src vers $dst"
+
+# Vérifie que la source existe et vérifie que la destination existe
+# Si le dossier source n'existe pas, alors il n'y a rien à sauvegarder
+info "Vérification de l'existence du dossier source"
+if test -d "$src"
+    success "Le dossier source existe"
+else
+    error "Le dossier source n'existe pas"
     exit 1
 end
-info "Source folder: $src"
 
-info "Gathering remote file list"
-set lsremote (ssh -o ConnectTimeout=5 bedroom find \"/media/256gb/podcasts/How Did This Get Made_\" -type f -printf \"%f\n\")
-info "Gathering local file list"
-set lslocal (find "/l/audio/podcasts/How Did This Get Made_/" -type f -printf "%f\n")
-info "Comparing lists"
-printf "%s\n" $lsremote $lslocal | sort | uniq -u
-set diff (printf "%s\n" $lsremote $lslocal | sort | uniq -u | wc -l)
-if test $diff -eq 0
-    info "No files to transfer. Exiting early"
-    if set -q podcasts_comm
-        set podcasts_comm "NODIFFS"
-    end
-    exit 0
-end
-
-info "Transfering files"
-begin
-    rsync \
-        --verbose \
-        --ignore-existing \
-        --size-only \
-        --recursive \
-        --chmod u=rwX,go=rX \
-        --mkpath \
-        --exclude='How Did This Get Made - Matinee Monday' \
-        "$src" "$dst"
-    set -g ret $status
-end 2>&1 | tee -a $log
-if test $ret -ne 0
-    log "There was an error during the transfer"
+# Transfer rsync
+info "Transfer des fichiers par rsync"
+umask 0133
+rsync \
+    --archive --verbose --delete --progress \
+    --itemize-changes --human-readable --stats \
+    --no-compress --ignore-existing \
+    --size-only --recursive --chmod u=rw,go=r \
+    --mkpath --exclude='How Did This Get Made - Matinee Monday' \
+    "$src" "$dst" 2>&1 | tee -a $log
+# Vérifie si la commande tar a réussi
+if test $pipestatus[1] -ne 0
+    error "Le transfer a échoué"
     exit 1
 end
-log "Transfer was successful"
-
-if set -q podcasts_comm
-    set podcasts_comm "DIFFS"
-end
+success "Le transfer a réussi"

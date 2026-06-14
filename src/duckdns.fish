@@ -1,30 +1,38 @@
 #! /usr/bin/fish
+
 set domains falarie
 set token d05499d5-3208-4b85-8bf2-be3ebbdc3ec2
+set refresh_url "https://www.duckdns.org/update"
+set log "/var/log/automation/duckdns.log" # Variable qui contient le chemin du fichier de log où les messages d'information et d'erreur seront enregistrés
+
+source /home/francois/development/automation/src/tools/log.fish 2>/dev/null
+or source /data/automation/tools/log.fish 2>/dev/null
 
 echo "
 
 
 -------------------------------------
- "(date -Iseconds)" 
+[[ Execution de "(status basename)" ]] 
+"(date -Iseconds)"
 -------------------------------------
 " | tee -a $log
 
 for domain in $domains
 	set fulldomain $domain.duckdns.org
-	set refresh_url "https://www.duckdns.org/update?domains=$domain&token=$token"
-	set response (curl -s -k -o - -- $refresh_url)
+	set response (
+		curl -s -k -G -o - \
+			-d "token=$token" \
+			-d "domains=$domain" \
+			$refresh_url
+	)
 
 	echo $refresh_url
 	echo $response 
 	if test "$response" = "OK"
-		logger -t duckdns.fish "Domain $fulldomain was successfully refreshed"
-		echo "duckdns.fish -- Domain $fulldomain was successfully refreshed" | tee -a $log
+		info "Domain $fulldomain was successfully refreshed"
 	else if test "$response" = "KO"
-		logger -t duckdns.fish "There was an error while attempting to refresh $fulldomain"
-		echo "duckdns.fish -- There was an error while attempting to refresh $fulldomain" | tee -a $log
+		error "There was an error while attempting to refresh $fulldomain"
 	else
-		logger -t duckdns.fish "Something weird happened while attempting to refresh $fulldomain"
-		echo "duckdns.fish -- Something weird happened while attempting to refresh $fulldomain" | tee -a $log
+		error "Something weird happened while attempting to refresh $fulldomain"
 	end
 end

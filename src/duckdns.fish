@@ -15,8 +15,9 @@ echo "
 [[ Execution de "(status basename)" ]] 
 "(date -Iseconds)"
 -------------------------------------
-" | tee -a $log
+" | tee -a "$log"
 
+info "Refreshing duckdns domains"
 for domain in $domains
 	set fulldomain $domain.duckdns.org
 	set response (
@@ -29,7 +30,7 @@ for domain in $domains
 	echo $refresh_url
 	echo $response 
 	if test "$response" = "OK"
-		info "Domain $fulldomain was successfully refreshed"
+		success "Domain $fulldomain was successfully refreshed"
 	else if test "$response" = "KO"
 		error "There was an error while attempting to refresh $fulldomain"
 	else

@@ -18,7 +18,7 @@ echo "
 [[ Execution de "(status basename)" ]]
 "(date -Iseconds)"
 -------------------------------------
-" | tee -a $log
+" | tee -a "$log"
 
 #region Verifie que les variables d'environnement nécessaires sont définies et valides
 # Verifie que la variable d'environnement RESTIC_REPOSITORY est défini et n'est pas vide
@@ -34,6 +34,22 @@ if test -n "$RESTIC_PASSWORD_FILE"; and test -e "$RESTIC_PASSWORD_FILE"
     success "RESTIC_PASSWORD_FILE est defini et existe"
 else
     error "RESTIC_PASSWORD_FILE vide ou n'existe pas"
+    exit 1
+end
+# Verifie que la variable d'environnement AWS_ACCESS_KEY_ID est définie et non vide
+info "Vérification de la variable d'environnement AWS_ACCESS_KEY_ID"
+if test -n "$AWS_ACCESS_KEY_ID"
+    success "$AWS_ACCESS_KEY_ID est defini"
+else
+    error "$AWS_ACCESS_KEY_ID est non defini"
+    exit 1
+end
+# Verifie que la variable d'environnement AWS_SECRET_ACCESS_KEY est définie et non vide
+info "Vérification de la variable d'environnement AWS_ACCESS_KEY_ID"
+if test -n "$AWS_SECRET_ACCESS_KEY"
+    success "$AWS_SECRET_ACCESS_KEY est defini"
+else
+    error "$AWS_SECRET_ACCESS_KEY est non defini"
     exit 1
 end
 #endregion

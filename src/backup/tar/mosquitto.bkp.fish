@@ -1,9 +1,8 @@
-# @fish-lsp-disable 4004
 #! /usr/bin/fish
 
 set src "/srv/mosquitto" # Variable qui contient le chemin du dossier de sauvegarde
 set dst "/l/backup/sklad/mosquitto" # Variable qui contient le chemin du dossier de destination
-set container (basename $src) # Variable qui contient le nom du container à arrêter et redémarrer pendant la sauvegarde
+set container (basename "$src") # Variable qui contient le nom du container à arrêter et redémarrer pendant la sauvegarde
 set arch "$dst/mosquitto."(date +%Y%m%dT%H%M%S | tr -d :-)".tar.zst" # Variable qui contient le chemin de l'archive à créer, avec un nom basé sur la date et l'heure
 set log "/var/log/automation/mosquitto.tar.log" # Variable qui contient le chemin du fichier de log
 set nb_max 5 # Variable qui contient le nombre maximum d'archives à conserver
@@ -11,9 +10,11 @@ set nb_max 5 # Variable qui contient le nombre maximum d'archives à conserver
 if test (status dirname) = "/data/automation"
     source /data/automation/tools/log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
     source /data/automation/tools/containers.fish # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
+    source /data/automation/tools/delete_old_backups.fish # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
 else
     source /home/francois/development/automation/src/tools/log.fish
     source /home/francois/development/automation/src/tools/containers.fish
+    source /home/francois/development/automation/src/tools/delete_old_backups.fish
 end
 
 # Ecrit l'entete du log pour cette execution du script
@@ -23,7 +24,7 @@ echo "
 [[ Execution de "(status basename)" ]]
 "(date -Iseconds)"
 -------------------------------------
-" | tee -a $log
+" | tee -a "$log"
 
 #region Vérifie que la source existe et vérifie que la destination existe
 # Si le dossier source n'existe pas, alors il n'y a rien à sauvegarder
@@ -53,10 +54,19 @@ end
 # Arrête le container s'il est en cours d'exécution pour éviter les problèmes de fichiers ouverts pendant la sauvegarde
 if is_container_running $container
     info "Arrêt du container $container_name"
-    set restart_container
     stop_container $container # Si le container est en cours d'exécution, on le stoppe et on garde en mémoire le fait qu'on l'a stoppé pour pouvoir le redémarrer plus tard
     if test $status -eq 0
         success "Container $container arrêté avec succès"
+        function restart_container --on-event fish_exit
+            # Redémarre le container s'il avait été arrêté précédemment
+            info "Démarrage du container $container_name"
+            start_container $container # Si la variable restart_container est définie, cela signifie que le container était en cours d'exécution avant d'être arrêté, donc on le redémarre
+            if test $status -eq 0
+                success "Container $container_name démarré avec succès"
+            else
+                error "Impossible de démarrer le container $container_name"
+            end
+        end
     else
         error "Impossible de stopper le container $container_name"
         exit 1
@@ -68,8 +78,8 @@ info "Creation de l'archive $arch"
 tar --create --verbose --zstd \
     --file "$arch" \
     --exclude 'log' \
-    --directory (dirname $src) \
-    (basename $src)  2>&1 | tee -a $log
+    --directory (dirname "$src") \
+    (basename "$src")  2>&1 | tee -a "$log"
 # Vérifie que la création de l'archive a réussi
 if test $pipestatus[1] -ne 0
     error "La sauvegarde a échoué"
@@ -77,20 +87,9 @@ if test $pipestatus[1] -ne 0
 end
 success "La sauvegarde a réussi"
 
-# Redémarre le container s'il avait été arrêté précédemment
-if set -q $restart_container
-    info "Démarrage du container $container_name"
-    start_container $container # Si la variable restart_container est définie, cela signifie que le container était en cours d'exécution avant d'être arrêté, donc on le redémarre
-    if test $status -eq 0
-        success "Container $container_name démarré avec succès"
-    else
-        warning "Impossible de démarrer le container $container_name"
-    end
-end
-
 #Supprime les anciennes sauvegardes en gardant au maximum $nb_max sauvegardes
 info "Suppression des anciennes sauvegardes"
-delete_old_backups "$dst/mosquitto.*.tar.zst" $nb_max
+delete_old_backups "$dst" "mosquitto.*.tar.zst" $nb_max
 if test $status -eq 0
     success "Anciennes sauvegardes supprimées avec succès"
 else

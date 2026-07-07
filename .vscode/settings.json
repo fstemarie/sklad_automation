@@ -1,6 +1,6 @@
 {
     "fish-lsp.workspaceFolders": [
-        "/home/francois/development/automation/src"
+        "/home/francois/development/automation/src/tools"
     ],
     "files.associations": {
         "*.fish.git": "plaintext"
@@ -11,6 +11,6 @@
             "**/*.git",
             "**/node_modules/**"
         ],
-    "fish_lsp_diagnostic_disable_error_codes": [1004, 2003, 4004]
-  }
+        "fish_lsp_diagnostic_disable_error_codes": [1004, 2003, 4004]
+    }
 }

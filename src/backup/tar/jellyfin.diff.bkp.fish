@@ -2,8 +2,9 @@
 
 set src "/srv/jellyfin" # Variable qui contient le chemin du dossier de sauvegarde
 set dst "/l/backup/sklad/jellyfin" # Variable qui contient le chemin du dossier de destination
-set container (basename $src) # Variable qui contient le nom du container à arrêter et redémarrer pendant la sauvegarde
-set arch "$dst/jellyfin.diff.tar.zst" # Variable qui contient le chemin de l'archive à créer, avec un nom basé sur la date et l'heure
+set container (basename "$src") # Variable qui contient le nom du container à arrêter et redémarrer pendant la sauvegarde
+set full_arch "$dst/jellyfin.full.tar.zst" # Variable qui contient le chemin de l'archive de la sauvegarde complète précédente, utilisée pour créer le fichier de snapshot de la sauvegarde complète précédente
+set diff_arch "$dst/jellyfin.diff.tar.zst" # Variable qui contient le chemin de l'archive à créer, avec un nom basé sur la date et l'heure
 set full_snar "$dst/jellyfin.full.snar" # Variable qui contient le chemin du fichier de snapshot 
 set diff_snar "$dst/jellyfin.diff.snar" # Variable qui contient le chemin du fichier de snapshot
 set log "/var/log/automation/jellyfin.tar.log" # Variable qui contient le chemin du fichier de log
@@ -23,11 +24,11 @@ echo "
 [[ Execution de "(status basename)" ]]
 "(date -Iseconds)"
 -------------------------------------
-" | tee -a $log
+" | tee -a "$log"
 
 #region Vérifie que la source existe et vérifie que la destination existe
 # Si le dossier source n'existe pas, alors il n'y a rien à sauvegarder
-info "Vérification de l'existence du dossier source et du dossier de destination"
+info "Vérification de l'existence du dossier source"
 if test -d "$src"
     success "Le dossier source existe"
 else
@@ -36,6 +37,7 @@ else
 end
 
 # Si le dossier de destination n'existe pas, le créer
+info "Vérification de l'existence du dossier de destination"
 if test -d "$dst"
     success "Le dossier de destination existe"
 else
@@ -48,6 +50,14 @@ else
         exit 1
     end
 end
+
+info "Vérification de l'existence de l'archive complete précédente"
+if test -f "$full_arch"; and test -f "$full_snar"
+    success "La sauvegarde complete existe"
+else
+    error "La sauvegarde complete n'existe pas. Impossible de continuer"
+    exit 1
+end
 #endregion
 
 # Cette ligne fait la difference entre une sauvegarde incrementale et une sauvegarde différentielle, en utilisant le fichier de snapshot de la sauvegarde complète précédente pour ne sauvegarder que les fichiers qui ont changé depuis la dernière sauvegarde complète
@@ -55,15 +65,24 @@ end
 # Donc, si on veut une sauvegarde différentielle, on doit utiliser le fichier de snapshot de la sauvegarde complète précédente pour ne sauvegarder que les fichiers qui ont changé depuis la dernière sauvegarde complète
 # Si on utilisait le fichier de snapshot de la sauvegarde différentielle précédente, nous aurions une sauvegarde incrémentale
 info "Copie le fichier de snapshot de la sauvegarde complète précédente pour l'utiliser comme base pour la sauvegarde différentielle"
-cp -f "$full_snar" "$diff_snar" 2>&1 | tee -a $log
+cp -f "$full_snar" "$diff_snar" 2>&1 | tee -a "$log"
 
 # Arrête le container s'il est en cours d'exécution pour éviter les problèmes de fichiers ouverts pendant la sauvegarde
 if is_container_running $container
     info "Arrêt du container $container_name"
-    set restart_container
     stop_container $container # Si le container est en cours d'exécution, on le stoppe et on garde en mémoire le fait qu'on l'a stoppé pour pouvoir le redémarrer plus tard
     if test $status -eq 0
         success "Container $container arrêté avec succès"
+        function restart_container --on-event fish_exit
+            # Redémarre le container s'il avait été arrêté précédemment
+            info "Démarrage du container $container_name"
+            start_container $container # Si la variable restart_container est définie, cela signifie que le container était en cours d'exécution avant d'être arrêté, donc on le redémarre
+            if test $status -eq 0
+                success "Container $container_name démarré avec succès"
+            else
+                error "Impossible de démarrer le container $container_name"
+            end
+        end
     else
         error "Impossible de stopper le container $container_name"
         exit 1
@@ -71,13 +90,13 @@ if is_container_running $container
 end
 
 # Creation de l'archive
-info "Creation de l'archive $arch"
+info "Creation de l'archive $diff_arch"
 tar --create --zstd \
     --listed-incremental "$diff_snar" \
-    --exclude 'cache' --exclude 'log' --exclude '.aspnet' \
-    --file "$arch" \
-    --directory (dirname $src) \
-    (basename $src) 2>&1 | tee -a $log
+    --exclude 'cache' --exclude='metadata' --exclude 'log' --exclude 'transcoding-temp' --exclude '.aspnet' --exclude '.cache' \
+    --exclude 'data/data' --exclude '.aspnet' --exclude '.cache' \
+    --file "$diff_arch" --directory (dirname "$src") \
+    (basename "$src") 2>&1 | tee -a "$log"
 # Verifie que la commande tar s'est bien exécutée
 if test $pipestatus[1] -ne 0
     error "La sauvegarde a échoué"
@@ -85,20 +104,9 @@ if test $pipestatus[1] -ne 0
 end
 success "La sauvegarde a réussi"
 
-# Redémarre le container s'il avait été arrêté précédemment
-if set -q $restart_container
-    info "Démarrage du container $container_name"
-    start_container $container # Si la variable restart_container est définie, cela signifie que le container était en cours d'exécution avant d'être arrêté, donc on le redémarre
-    if test $status -eq 0
-        success "Container $container_name démarré avec succès"
-    else
-        error "Impossible de démarrer le container $container_name"
-    end
-end
-
 # Supprime le fichier de snapshot de la sauvegarde différentielle qui ne sera jamais utilisé
 info "Suppression du snapshot de la sauvegarde différentielle"
-sudo rm -f "$diff_snar" 2>&1 | tee -a $log
+sudo rm -f "$diff_snar" 2>&1 | tee -a "$log"
 if test $pipestatus[1] -eq 0
     success "La suppression a réussi"
 else

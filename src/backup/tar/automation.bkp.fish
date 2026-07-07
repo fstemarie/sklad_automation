@@ -21,7 +21,7 @@ echo "
 [[ Execution de  "(status basename)" ]]
 "(date -Iseconds)" 
 -------------------------------------
-" | tee -a $log
+" | tee -a "$log"
 
 info "Sauvegarde du dossier $src vers $dst"
 
@@ -54,8 +54,8 @@ end
 info "Creation de l'archive $arch"
 tar --create --verbose --zstd \
     --file "$arch" \
-    --directory (dirname $src) \
-    (basename $src) 2>&1 | tee -a $log
+    --directory (dirname "$src") \
+    (basename "$src") 2>&1 | tee -a "$log"
 # Vérifie si la commande tar a réussi
 if test $pipestatus[1] -ne 0
     error "La sauvegarde a échoué"

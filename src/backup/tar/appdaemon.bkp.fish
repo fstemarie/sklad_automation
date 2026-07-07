@@ -2,7 +2,7 @@
 
 set src "/srv/appdaemon" # Variable qui contient le chemin vers le dossier à sauvegarder
 set dst "/l/backup/sklad/appdaemon" # Variable qui contient le chemin vers le dossier de destination de la sauvegarde
-set container (basename $src) # Variable qui contient le nom du container à arrêter et redémarrer pendant la sauvegarde
+set container (basename "$src") # Variable qui contient le nom du container à arrêter et redémarrer pendant la sauvegarde
 set arch "$dst/appdaemon."(date +%Y%m%dT%H%M%S | tr -d :-)".tar.zst" # Variable qui contient le chemin vers l'archive de destination, avec un nom basé sur la date et l'heure
 set log "/var/log/automation/appdaemon.tar.log" # Variable qui contient le chemin vers le fichier de log
 set nb_max 5 # Variable qui contient le nombre maximum d'archives à conserver
@@ -24,7 +24,7 @@ echo "
 [[ Execution de "(status basename)" ]]
 "(date -Iseconds)"
 -------------------------------------
-" | tee -a $log
+" | tee -a "$log"
 
 #region Vérifie que la source existe et vérifie que la destination existe
 # Si le dossier source n'existe pas, alors il n'y a rien à sauvegarder
@@ -79,8 +79,8 @@ tar --create --verbose --zstd \
     --file "$arch" \
     --exclude '__pycache__' --exclude '.git' --exclude '.local' \
     --exclude '.venv' --exclude '.cache' --exclude "logs" \
-    --directory (dirname $src) \
-    (basename $src)  2>&1 | tee -a $log
+    --directory (dirname "$src") \
+    (basename "$src")  2>&1 | tee -a "$log"
 # Vérifie si la commande tar a réussi
 if test $pipestatus[1] -ne 0
     error "La sauvegarde a échoué"

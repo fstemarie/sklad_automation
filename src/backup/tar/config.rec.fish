@@ -17,7 +17,7 @@ echo "
 [[ Execution de "(status basename)" ]]
 "(date -Iseconds)"
 -------------------------------------
-" | tee -a $log
+" | tee -a "$log"
 
 # Si l'archive n'existe pas, affiche une erreur et quitte le script
 info "Verification de l'existence de l'archive"
@@ -53,7 +53,7 @@ info "Restauration de l'archive $arch"
 tar --extract --verbose --zstd \
     --file "$arch" \
     --directory="$dst" \
-    --strip 1 2>&1 | tee -a $log
+    --strip 1 2>&1 | tee -a "$log"
 if test $status -ne 0
     error "La restauration a échoué"
     exit 1

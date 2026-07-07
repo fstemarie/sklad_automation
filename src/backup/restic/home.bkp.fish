@@ -17,7 +17,7 @@ echo "
 [[ Execution de "(status basename)" ]]
 "(date -Iseconds)"
 -------------------------------------
-" | tee -a $log
+" | tee -a "$log"
 
 #region Verifie que les variables d'environnement nécessaires sont définies et valides
 # Verifie que la variable d'environnement RESTIC_REPOSITORY est définie et n'est pas vide
@@ -52,10 +52,9 @@ pushd "$src"
 restic backup \
     --host $hostname \
     --tag home \
-    --exclude '.cache' \
-    --exclude '.vscode*' \
-    --exclude 'development'\
-    .  2>&1 | tee -a $log
+    --exclude '.cache' --exclude '.vscode*' --exclude 'development' \
+    --option s3.connections=1 --pack-size 16 \
+    .  2>&1 | tee -a "$log"
 # Vérifie si la commande backup a réussi
 if test $pipestatus[1] -ne 0
     error "Il y a eu une erreur lors de la création du snapshot"
@@ -71,7 +70,7 @@ restic forget \
     --tag home \
     --keep-daily 7 \
     --keep-weekly 4 \
-    --keep-monthly 6 2>&1 | tee -a $log
+    --keep-monthly 6 2>&1 | tee -a "$log"
 # Vérifie si la commande forget a réussi
 if test $pipestatus[1] -ne 0
     error "La suppression des snapshots a échouée"

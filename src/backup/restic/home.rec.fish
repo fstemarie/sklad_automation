@@ -20,7 +20,7 @@ echo "
 [[ Execution de "(status basename)" ]]
 "(date -Iseconds)"
 -------------------------------------
-" | tee -a $log
+" | tee -a "$log"
 
 #region Verifie que les variables d'environnement nécessaires sont définies et valides
 # Verifie que la variable d'environnement RESTIC_REPOSITORY est défini et n'est pas vide

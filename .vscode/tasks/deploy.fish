@@ -29,6 +29,15 @@ if test $status -ne 0
     exit 1
 end
 
+set dst "/data/automation/tools"
+echo "-- Copying tools to $dst"
+mkdir -p "$dst"
+cp -R ./src/tools/* "$dst"
+if test $status -ne 0
+    echo "-- Error while copying tool scripts"
+    exit 1
+end
+
 set dst "/data/config/logrotate"
 echo "-- Copying logrotate config to $dst"
 mkdir -p "$dst"

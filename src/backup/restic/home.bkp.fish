@@ -4,11 +4,8 @@ set src "/home/francois" # La source a sauvegarder
 set log "/var/log/automation/home.restic.log" # Le fichier de log
 
 # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
-if test (status dirname) = "/data/automation"
-    source /data/automation/tools/log.fish
-else
     source /home/francois/development/automation/src/tools/log.fish
-end # Inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
+or source /data/automation/tools/log.fish
 
 # Ecrit l'entete du log pour cette execution du script
 echo "

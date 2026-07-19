@@ -32,7 +32,7 @@ else
 end
 # Verifie que la sauvegarde complète précédente existe, sinon il n'y a pas de base pour faire une sauvegarde différentielle
 info "Vérification de l'existence de l'archive complete précédente"
-if test -f "$full_arch"; and test -f "$full_snar"
+if test -L "$full_arch"; and test -f "$full_snar"
     success "L'archive complète précédente existe"
 else
     error "L'archive complète précédente n'existe pas. Impossible de continuer"

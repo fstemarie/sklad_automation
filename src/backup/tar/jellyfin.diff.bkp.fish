@@ -52,7 +52,7 @@ else
 end
 
 info "Vérification de l'existence de l'archive complete précédente"
-if test -f "$full_arch"; and test -f "$full_snar"
+if test -L "$full_arch"; and test -f "$full_snar"
     success "La sauvegarde complete existe"
 else
     error "La sauvegarde complete n'existe pas. Impossible de continuer"

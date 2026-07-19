@@ -1,7 +1,7 @@
 #! /usr/bin/fish
 
 set src "/srv/jellyfin" # La source a sauvegarder
-set dst "/l/backup/sklad/jellyfin" # La destination de la sauvegarde, doit être un dossier existant ou qui peut être créé
+set dst "/l/backup/jellyfin" # La destination de la sauvegarde, doit être un dossier existant ou qui peut être créé
 set container (basename "$src") # Variable qui contient le nom du container à arrêter et redémarrer pendant la sauvegarde
 set arch "$dst/jellyfin."(date +%Y%m%dT%H%M%S)".tar.zst" # Le nom de l'archive
 set snar "$dst/jellyfin.full.snar" # Variable qui contient le chemin du fichier de snapshot pour les sauvegardes incrémentielles

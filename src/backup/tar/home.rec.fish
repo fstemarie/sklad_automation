@@ -1,6 +1,6 @@
 #! /usr/bin/fish
 
-set src "/l/backup/sklad/home" # Variable qui contient le chemin vers le dossier de sauvegarde
+set src "/l/backup/home" # Variable qui contient le chemin vers le dossier de sauvegarde
 set dst "/home/francois/home" # Variable qui contient le chemin vers le dossier de destination
 set full_arch "$src/home.full.tar.zst" # Variable qui contient le chemin vers l'archive complete la plus récente
 set diff_arch "$src/home.diff.tar.zst" # Variable qui contient le chemin vers l'archive complete la plus récente

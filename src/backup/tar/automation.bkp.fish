@@ -1,7 +1,7 @@
 #! /usr/bin/fish
 
 set src "/data/automation" # Variable qui contient le chemin du dossier à sauvegarder
-set dst "/l/backup/sklad/automation"  # Variable qui contient le chemin du dossier de destination où les sauvegardes seront stockées
+set dst "/l/backup/automation"  # Variable qui contient le chemin du dossier de destination où les sauvegardes seront stockées
 set arch "$dst/automation."(date +%Y%m%dT%H%M%S | tr -d :-)".tar.zst"  # Variable qui contient le chemin complet du fichier d'archive à créer, avec un nom basé sur la date et l'heure actuelles
 set log "/var/log/automation/automation.tar.log" # Variable qui contient le chemin du fichier de log où les messages d'information et d'erreur seront enregistrés
 set nb_max 5 # Variable qui contient le nombre maximum de sauvegardes à conserver, utilisée pour supprimer les anciennes sauvegardes si nécessaire

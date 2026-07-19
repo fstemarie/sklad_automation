@@ -1,7 +1,7 @@
 #! /usr/bin/fish
 
 set src "/srv/qbittorrent" # Variable qui contient le chemin du dossier de sauvegarde
-set dst "/l/backup/sklad/qbittorrent" # Variable qui contient le chemin du dossier de destination
+set dst "/l/backup/qbittorrent" # Variable qui contient le chemin du dossier de destination
 set container (basename "$src") # Variable qui contient le nom du container à arrêter et redémarrer pendant la sauvegarde
 set arch "$dst/qbittorrent."(date +%Y%m%dT%H%M%S | tr -d :-)".tar.zst" # Variable qui contient le chemin de l'archive à créer, avec un nom basé sur la date et l'heure
 set log "/var/log/automation/qbittorrent.tar.log" # Variable qui contient le chemin du fichier de log

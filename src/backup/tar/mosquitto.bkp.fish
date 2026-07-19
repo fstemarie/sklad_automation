@@ -1,7 +1,7 @@
 #! /usr/bin/fish
 
 set src "/srv/mosquitto" # Variable qui contient le chemin du dossier de sauvegarde
-set dst "/l/backup/sklad/mosquitto" # Variable qui contient le chemin du dossier de destination
+set dst "/l/backup/mosquitto" # Variable qui contient le chemin du dossier de destination
 set container (basename "$src") # Variable qui contient le nom du container à arrêter et redémarrer pendant la sauvegarde
 set arch "$dst/mosquitto."(date +%Y%m%dT%H%M%S | tr -d :-)".tar.zst" # Variable qui contient le chemin de l'archive à créer, avec un nom basé sur la date et l'heure
 set log "/var/log/automation/mosquitto.tar.log" # Variable qui contient le chemin du fichier de log

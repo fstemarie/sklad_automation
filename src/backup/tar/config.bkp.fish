@@ -1,7 +1,7 @@
 #! /usr/bin/fish
 
 set src "/data/config" # La source a sauvegarder
-set dst "/l/backup/sklad/config" # La destination de la sauvegarde, doit être un dossier existant ou qui peut être créé
+set dst "/l/backup/config" # La destination de la sauvegarde, doit être un dossier existant ou qui peut être créé
 set container (basename "$src") # Variable qui contient le nom du container à arrêter et redémarrer pendant la sauvegarde
 set arch "$dst/config."(date +%Y%m%dT%H%M%S | tr -d :-)".tar.zst" # Le nom de l'archive
 set log "/var/log/automation/config.tar.log" # Le fichier de log, doit être un fichier existant ou qui peut être créé

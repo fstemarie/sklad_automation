@@ -1,6 +1,6 @@
 #! /usr/bin/fish
 
-set src "/l/backup/sklad/qbittorrent" # Variable qui contient le chemin du dossier de sauvegarde
+set src "/l/backup/qbittorrent" # Variable qui contient le chemin du dossier de sauvegarde
 set dst "/srv/qbittorrent" # Variable qui contient le chemin du dossier de destination
 set arch (command ls -1dr $src/qbittorrent.*.tar.zst | head -n1) # Variable qui contient le chemin de l'archive à restaurer, en prenant la plus récente
 

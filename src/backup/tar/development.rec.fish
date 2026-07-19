@@ -1,6 +1,6 @@
 #! /usr/bin/fish
 
-set src "/l/backup/sklad/development" # Variable qui contient le chemin du dossier à sauvegarder
+set src "/l/backup/development" # Variable qui contient le chemin du dossier à sauvegarder
 set dst "/home/francois/development" # Variable qui contient le chemin du dossier de destination où les sauvegardes seront stockées
 set full_arch "$src/development.full.tar.zst" # Variable qui contient le chemin complet du fichier d'archive à restaurer, en prenant le plus récent
 set diff_arch "$src/development.diff.tar.zst" # Variable qui contient le chemin de l'archive à créer, avec un nom basé sur la date et l'heure

@@ -1,6 +1,6 @@
 #! /usr/bin/fish
 
-set src "/l/backup/sklad/config" # Variable qui contient le chemin du dossier de sauvegarde
+set src "/l/backup/config" # Variable qui contient le chemin du dossier de sauvegarde
 set dst "/data/config" # Variable qui contient le chemin du dossier de destination
 set arch (command ls -1dr $src/config.*.tar.zst | head -n1) # Variable qui contient le chemin de l'archive la plus récente
 

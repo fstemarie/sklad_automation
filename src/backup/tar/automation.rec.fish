@@ -1,6 +1,6 @@
 #! /usr/bin/fish
 
-set src "/l/backup/sklad/automation" # Variable qui contient le chemin du dossier de sauvegarde
+set src "/l/backup/automation" # Variable qui contient le chemin du dossier de sauvegarde
 set dst "/data/automation" # Variable qui contient le chemin du dossier de destination
 set arch (command ls -1dr $src/automation.*.tar.zst | head -n1) # Variable qui contient le chemin de l'archive la plus récente
 

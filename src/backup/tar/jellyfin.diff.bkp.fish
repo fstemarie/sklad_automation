@@ -1,7 +1,7 @@
 #! /usr/bin/fish
 
 set src "/srv/jellyfin" # Variable qui contient le chemin du dossier de sauvegarde
-set dst "/l/backup/sklad/jellyfin" # Variable qui contient le chemin du dossier de destination
+set dst "/l/backup/jellyfin" # Variable qui contient le chemin du dossier de destination
 set container (basename "$src") # Variable qui contient le nom du container à arrêter et redémarrer pendant la sauvegarde
 set full_arch "$dst/jellyfin.full.tar.zst" # Variable qui contient le chemin de l'archive de la sauvegarde complète précédente, utilisée pour créer le fichier de snapshot de la sauvegarde complète précédente
 set diff_arch "$dst/jellyfin.diff.tar.zst" # Variable qui contient le chemin de l'archive à créer, avec un nom basé sur la date et l'heure

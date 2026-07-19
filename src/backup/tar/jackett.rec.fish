@@ -1,6 +1,6 @@
 #! /usr/bin/fish
 
-set src "/l/backup/sklad/jackett" # Variable qui contient le chemin vers le dossier de sauvegarde
+set src "/l/backup/jackett" # Variable qui contient le chemin vers le dossier de sauvegarde
 set dst "/srv/jackett" # Variable qui contient le chemin vers le dossier de destination de la sauvegarde
 set arch (command ls -1dr $src/jackett.*.tar.zst | head -n1) # Variable qui contient le chemin vers l'archive de sauvegarde la plus récente
 

@@ -1,7 +1,7 @@
 #! /usr/bin/fish
 
 set src "/home/francois/development" # La source a sauvegarder
-set dst "/l/backup/sklad/development" # La destination de la sauvegarde, doit être un dossier existant ou qui peut être créé
+set dst "/l/backup/development" # La destination de la sauvegarde, doit être un dossier existant ou qui peut être créé
 set full_arch "$dst/development.full.tar.zst" # Variable qui contient le chemin de l'archive à créer, avec un nom basé sur la date et l'heure
 set full_snar "$dst/development.full.snar" # Variable qui contient le chemin du fichier de snapshot 
 set diff_arch "$dst/development.diff.tar.zst" # Variable qui contient le chemin de l'archive à créer, avec un nom basé sur la date et l'heure

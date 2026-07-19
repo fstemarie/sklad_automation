@@ -4,7 +4,7 @@ set src "/home/francois" # La source a sauvegarder
 set log "/var/log/automation/home.restic.log" # Le fichier de log
 
 # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
-    source /home/francois/development/automation/src/tools/log.fish
+source /home/francois/development/automation/src/tools/log.fish
 or source /data/automation/tools/log.fish
 
 # Ecrit l'entete du log pour cette execution du script

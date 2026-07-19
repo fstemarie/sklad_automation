@@ -86,7 +86,7 @@ info "Creation de l'archive $arch"
 tar --create --zstd \
     --listed-incremental "$snar" \
     --exclude 'cache' --exclude='metadata' --exclude 'log' --exclude 'transcoding-temp' --exclude '.aspnet' --exclude '.cache' \
-    --exclude 'data/data' --exclude '.aspnet' --exclude '.cache' \
+    --exclude 'data/data' --exclude '.aspnet' --exclude '.cache' --exclude '.nv' \
     --file "$arch" \
     --directory (dirname "$src") \
     (basename "$src") 2>&1 | tee -a "$log"

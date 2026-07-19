@@ -94,7 +94,7 @@ info "Creation de l'archive $diff_arch"
 tar --create --zstd \
     --listed-incremental "$diff_snar" \
     --exclude 'cache' --exclude='metadata' --exclude 'log' --exclude 'transcoding-temp' --exclude '.aspnet' --exclude '.cache' \
-    --exclude 'data/data' --exclude '.aspnet' --exclude '.cache' \
+    --exclude 'data/data' --exclude '.aspnet' --exclude '.cache' --exclude '.nv' \
     --file "$diff_arch" --directory (dirname "$src") \
     (basename "$src") 2>&1 | tee -a "$log"
 # Verifie que la commande tar s'est bien exécutée

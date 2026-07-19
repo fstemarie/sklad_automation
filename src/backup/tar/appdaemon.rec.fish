@@ -1,7 +1,7 @@
 #! /usr/bin/fish
 
 set src "/l/backup/appdaemon" # Variable qui contient le chemin du dossier de sauvegarde
-set dst "/srv/appdaemon" # Variable qui contient le chemin du dossier de destination
+set dst "/l/containers/appdaemon" # Variable qui contient le chemin du dossier de destination
 set arch (command ls -1dr $src/appdaemon.*.tar.zst | head -n1) # Variable qui contient le chemin de l'archive la plus récente
 
 if test (status dirname) = "/data/automation"

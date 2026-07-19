@@ -1,7 +1,7 @@
 #! /usr/bin/fish
 
 set src "/l/backup/jellyfin" # Variable qui contient le chemin vers le dossier de sauvegarde
-set dst "/srv/jellyfin" # Variable qui contient le chemin vers le dossier de destination de la sauvegarde
+set dst "/l/containers/jellyfin" # Variable qui contient le chemin vers le dossier de destination de la sauvegarde
 set arch (command ls -1dr $src/jellyfin.*.tar.zst | head -n1) # Variable qui contient le chemin vers l'archive de sauvegarde la plus récente
 
 if test (status dirname) = "/data/automation"

@@ -1,6 +1,6 @@
 #! /usr/bin/fish
 
-set src "/srv/jackett" # La source a sauvegarder
+set src "/l/containers/jackett" # La source a sauvegarder
 set dst "/l/backup/jackett" # La destination de la sauvegarde, doit être un dossier existant ou qui peut être créé
 set container (basename "$src") # Variable qui contient le nom du container à arrêter et redémarrer pendant la sauvegarde
 set arch "$dst/jackett."(date +%Y%m%dT%H%M%S | tr -d :-)".tar.zst" # Le nom de l'archive

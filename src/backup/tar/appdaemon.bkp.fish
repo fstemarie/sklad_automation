@@ -1,6 +1,6 @@
 #! /usr/bin/fish
 
-set src "/srv/appdaemon" # Variable qui contient le chemin vers le dossier à sauvegarder
+set src "/l/containers/appdaemon" # Variable qui contient le chemin vers le dossier à sauvegarder
 set dst "/l/backup/appdaemon" # Variable qui contient le chemin vers le dossier de destination de la sauvegarde
 set container (basename "$src") # Variable qui contient le nom du container à arrêter et redémarrer pendant la sauvegarde
 set arch "$dst/appdaemon."(date +%Y%m%dT%H%M%S | tr -d :-)".tar.zst" # Variable qui contient le chemin vers l'archive de destination, avec un nom basé sur la date et l'heure

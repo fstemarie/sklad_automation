@@ -51,7 +51,7 @@ restic backup \
     --tag development \
     --exclude ".venv" --exclude "node_modules" \
     --exclude ".git" --exclude "__pycache__" \
-    --option s3.connections=10 --packsize 16 \
+    --option s3.connections=10 --pack-size 16 \
     .  2>&1 | tee -a "$log"
 # Vérifie si la commande backup a réussi
 if test $pipestatus[1] -ne 0

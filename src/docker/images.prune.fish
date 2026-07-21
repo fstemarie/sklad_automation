@@ -1,15 +1,12 @@
 #! /usr/bin/env fish
 
-if test (status dirname) = "/data/automation"
-    source /data/automation/tools/log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
-else
-    source /home/francois/development/automation/src/tools/log.fish
-end
+source /home/francois/development/automation/src/tools/log.fish
+or source /data/automation/tools/log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
 
 echo "
 
 -------------------------------------
-[[ Running images.purge.fish ]]
+[[ Running images.prune.fish ]]
  "(date -Iseconds)"
 -------------------------------------
 " | tee -a "$log"

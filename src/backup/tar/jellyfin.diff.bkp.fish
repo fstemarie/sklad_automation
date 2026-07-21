@@ -9,13 +9,10 @@ set full_snar "$dst/jellyfin.full.snar" # Variable qui contient le chemin du fic
 set diff_snar "$dst/jellyfin.diff.snar" # Variable qui contient le chemin du fichier de snapshot
 set log "/var/log/automation/jellyfin.tar.log" # Variable qui contient le chemin du fichier de log
 
-if test (status dirname) = "/data/automation"
-    source /data/automation/tools/log.fish # fonctions d'écriture de log
-    source /data/automation/tools/containers.fish # fonctions reliees aux containers
-else
-    source /home/francois/development/automation/src/tools/log.fish
-    source /home/francois/development/automation/src/tools/containers.fish
-end
+source /home/francois/development/automation/src/tools/log.fish 2> /dev/null
+or source /data/automation/tools/log.fish 2> /dev/null # fonctions d'écriture de log
+source /home/francois/development/automation/src/tools/containers.fish 2> /dev/null
+or source /data/automation/tools/containers.fish 2> /dev/null # fonctions reliees aux containers
 
 # Ecrit l'entete du log pour cette execution du script
 echo "

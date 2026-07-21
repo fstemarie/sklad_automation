@@ -4,11 +4,8 @@ set src "/l/backup/jackett" # Variable qui contient le chemin vers le dossier de
 set dst "/l/containers/jackett" # Variable qui contient le chemin vers le dossier de destination de la sauvegarde
 set arch (command ls -1dr $src/jackett.*.tar.zst | head -n1) # Variable qui contient le chemin vers l'archive de sauvegarde la plus récente
 
-if test (status dirname) = "/data/automation"
-    source /data/automation/tools/log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
-else
-    source /home/francois/development/automation/src/tools/log.fish
-end
+source /home/francois/development/automation/src/tools/log.fish 2> /dev/null
+or source /data/automation/tools/log.fish 2> /dev/null # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
 
 # Ecrit l'entete du log pour cette execution du script
 echo "

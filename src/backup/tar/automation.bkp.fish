@@ -6,13 +6,12 @@ set arch "$dst/automation."(date +%Y%m%dT%H%M%S | tr -d :-)".tar.zst"  # Variabl
 set log "/var/log/automation/automation.tar.log" # Variable qui contient le chemin du fichier de log où les messages d'information et d'erreur seront enregistrés
 set nb_max 5 # Variable qui contient le nombre maximum de sauvegardes à conserver, utilisée pour supprimer les anciennes sauvegardes si nécessaire
 
-if test (status dirname) = "/data/automation"
-    source /data/automation/tools/log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
-    source /data/automation/tools/containers.fish # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
-else
-    source /home/francois/development/automation/src/tools/log.fish
-    source /home/francois/development/automation/src/tools/containers.fish
-end
+source /home/francois/development/automation/src/tools/log.fish 2> /dev/null
+or source /data/automation/tools/log.fish 2> /dev/null # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
+source /home/francois/development/automation/src/tools/containers.fish 2> /dev/null
+or source /data/automation/tools/containers.fish 2> /dev/null # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
+source /home/francois/development/automation/src/tools/delete_old_backups.fish 2> /dev/null
+or source /data/automation/tools/delete_old_backups.fish 2> /dev/null # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
 
 # Ecrit l'entete du log pour cette execution du script
 echo "

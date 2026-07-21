@@ -5,8 +5,9 @@ set dst "/home/francois/development" # Variable qui contient le chemin du dossie
 set full_arch "$src/development.full.tar.zst" # Variable qui contient le chemin complet du fichier d'archive à restaurer, en prenant le plus récent
 set diff_arch "$src/development.diff.tar.zst" # Variable qui contient le chemin de l'archive à créer, avec un nom basé sur la date et l'heure
 
-source /data/automation/tools/log.fish 2> /dev/null # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
+# inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
 source /home/francois/development/automation/src/tools/log.fish 2> /dev/null
+or source /data/automation/tools/log.fish 2> /dev/null
 
 # Ecrit l'entete du log pour cette execution du script
 echo "

@@ -6,11 +6,8 @@ set log "/var/log/automation/audio.rsync.tar.log" # Variable qui contient le che
 set secret_file "/home/francois/.secrets/filelu" # Variable qui contient le chemin du fichier qui contient le mot de passe de filelu
 
 # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
-if test (status dirname) = "/data/automation"
-    source /data/automation/tools/log.fish
-else
-    source /home/francois/development/automation/src/tools/log.fish
-end
+source /home/francois/development/automation/src/tools/log.fish 2> /dev/null
+source /data/automation/tools/log.fish 2> /dev/null
 
 # Ecrit l'entete du log pour cette execution du script
 echo "

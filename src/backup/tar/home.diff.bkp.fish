@@ -9,8 +9,9 @@ set diff_snar "$dst/home.diff.snar" # Variable qui contient le chemin du fichier
 set log "/var/log/automation/home.tar.diff.bkp.log" # Le fichier de log, doit être un fichier existant ou qui peut être créé
 set nb_max 2 # Le nombre maximum d'archives à conserver, les plus anciennes seront supprimées
 
-source /data/automation/tools/log.fish # fonctions d'écriture de log
-source /home/francois/development/automation/src/tools/log.fish
+# inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
+source /home/francois/development/automation/src/tools/log.fish 2> /dev/null
+or source /data/automation/tools/log.fish 2> /dev/null
 
 # Ecrit l'entete du log pour cette execution du script
 echo "

@@ -8,10 +8,10 @@ set diff_snar "$dst/development.diff.snar" # Variable qui contient le chemin du 
 set log "/var/log/automation/development.tar.full.bkp.log" # Le fichier de log, doit être un fichier existant ou qui peut être créé
 set nb_max 5 # Le nombre maximum d'archives à conserver, les plus anciennes seront supprimées
 
-source /data/automation/tools/log.fish 2> /dev/null # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
-source /data/automation/tools/delete_old_backups.fish 2> /dev/null # inclut le fichier delete_old_backups.fish pour utiliser la fonction de suppression des anciennes sauvegardes
 source /home/francois/development/automation/src/tools/log.fish 2> /dev/null
+or source /data/automation/tools/log.fish 2> /dev/null # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
 source /home/francois/development/automation/src/tools/delete_old_backups.fish 2> /dev/null
+or source /data/automation/tools/delete_old_backups.fish 2> /dev/null # inclut le fichier delete_old_backups.fish pour utiliser la fonction de suppression des anciennes sauvegardes
 
 # Ecrit l'entete du log pour cette execution du script
 echo "

@@ -4,13 +4,10 @@ set src "/l/backup/nodered" # Variable qui contient le chemin du dossier de sauv
 set dst "/l/containers/nodered" # Variable qui contient le chemin du dossier de destination
 set arch (command ls -1dr $src/nodered.*.tar.zst | head -n1) # Variable qui contient le chemin de l'archive à restaurer, en prenant la plus récente
 
-if test (status dirname) = "/data/automation"
-    source /data/automation/tools/log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
-    source /data/automation/tools/containers.fish # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
-else
-    source /home/francois/development/automation/src/tools/log.fish
-    source /home/francois/development/automation/src/tools/containers.fish
-end
+source /home/francois/development/automation/src/tools/log.fish 2> /dev/null
+or source /data/automation/tools/log.fish 2> /dev/null # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
+source /home/francois/development/automation/src/tools/containers.fish 2> /dev/null
+or source /data/automation/tools/containers.fish 2> /dev/null # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
 
 # Ecrit l'entete du log pour cette execution du script
 echo "

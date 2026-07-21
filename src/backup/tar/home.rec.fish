@@ -5,8 +5,8 @@ set dst "/home/francois/home" # Variable qui contient le chemin vers le dossier 
 set full_arch "$src/home.full.tar.zst" # Variable qui contient le chemin vers l'archive complete la plus récente
 set diff_arch "$src/home.diff.tar.zst" # Variable qui contient le chemin vers l'archive complete la plus récente
 
-source /data/automation/tools/log.fish 2> /dev/null # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
 source /home/francois/development/automation/src/tools/log.fish 2> /dev/null
+or source /data/automation/tools/log.fish 2> /dev/null # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
 
 # Ecrit l'entete du log pour cette execution du script
 echo "

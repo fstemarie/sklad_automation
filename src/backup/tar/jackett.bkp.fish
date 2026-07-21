@@ -7,15 +7,12 @@ set arch "$dst/jackett."(date +%Y%m%dT%H%M%S | tr -d :-)".tar.zst" # Le nom de l
 set log "/var/log/automation/jackett.tar.log" # Le fichier de log, doit être un fichier existant ou qui peut être créé
 set nb_max 5 # Le nombre maximum d'archives à conserver, les plus anciennes seront supprimées
 
-if test (status dirname) = "/data/automation"
-    source /data/automation/tools/log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
-    source /data/automation/tools/containers.fish # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
-    source /data/automation/tools/delete_old_backups.fish # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
-else
-    source /home/francois/development/automation/src/tools/log.fish
-    source /home/francois/development/automation/src/tools/containers.fish
-    source /home/francois/development/automation/src/tools/delete_old_backups.fish
-end
+source /home/francois/development/automation/src/tools/log.fish
+or source /data/automation/tools/log.fish 2> /dev/null # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
+source /home/francois/development/automation/src/tools/containers.fish 2> /dev/null
+or source /data/automation/tools/containers.fish 2> /dev/null # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
+source /home/francois/development/automation/src/tools/delete_old_backups.fish 2> /dev/null
+or source /data/automation/tools/delete_old_backups.fish 2> /dev/null # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
 
 # Ecrit l'entete du log pour cette execution du script
 echo "

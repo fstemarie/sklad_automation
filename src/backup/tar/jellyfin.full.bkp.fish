@@ -8,14 +8,12 @@ set snar "$dst/jellyfin.full.snar" # Variable qui contient le chemin du fichier 
 set log "/var/log/automation/jellyfin.tar.log" # Le fichier de log, doit être un fichier existant ou qui peut être créé
 set nb_max 5 # Le nombre maximum d'archives à conserver, les plus anciennes seront supprimées
 
-source /home/francois/Documents/development/automation/src/tools/log.fish
-or source /data/automation/tools/log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
-
-source /home/francois/Documents/development/automation/src/tools/containers.fish
-or source /data/automation/tools/containers.fish # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
-
-source /home/francois/Documents/development/automation/src/tools/delete_old_backups.fish # inclut le fichier delete_old_backups.fish pour utiliser les fonctions de suppression des anciennes sauvegardes
-or source /data/automation/tools/delete_old_backups.fish # inclut le fichier delete_old_backups.fish pour utiliser les fonctions de suppression des anciennes sauvegardes
+source /home/francois/Documents/development/automation/src/tools/log.fish 2> /dev/null # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
+or source /data/automation/tools/log.fish 2> /dev/null
+source /home/francois/Documents/development/automation/src/tools/containers.fish 2> /dev/null
+or source /data/automation/tools/containers.fish 2> /dev/null # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
+source /home/francois/Documents/development/automation/src/tools/delete_old_backups.fish 2> /dev/null # inclut le fichier delete_old_backups.fish pour utiliser les fonctions de suppression des anciennes sauvegardes
+or source /data/automation/tools/delete_old_backups.fish 2> /dev/null
 
 # Ecrit l'entete du log pour cette execution du script
 echo "

@@ -4,13 +4,10 @@ set src "/l/backup/jellyfin" # Variable qui contient le chemin vers le dossier d
 set dst "/l/containers/jellyfin" # Variable qui contient le chemin vers le dossier de destination de la sauvegarde
 set arch (command ls -1dr $src/jellyfin.*.tar.zst | head -n1) # Variable qui contient le chemin vers l'archive de sauvegarde la plus récente
 
-if test (status dirname) = "/data/automation"
-    source /data/automation/tools/log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
-    source /data/automation/tools/containers.fish # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
-else
-    source /home/francois/development/automation/src/tools/log.fish
-    source /home/francois/development/automation/src/tools/containers.fish
-end
+source /home/francois/development/automation/src/tools/log.fish 2> /dev/null # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
+or source /data/automation/tools/log.fish 2> /dev/null
+source /home/francois/development/automation/src/tools/containers.fish 2> /dev/null
+or source /data/automation/tools/containers.fish 2> /dev/null # inclut le fichier tools.fish pour utiliser les fonctions d'outils génériques
 
 # Ecrit l'entete du log pour cette execution du script
 echo "

@@ -4,8 +4,8 @@ set src "/home/francois/development" # Variable qui contient la source a sauvega
 set log "/var/log/automation/development.restic.bkp.log" # Variable qui contient la destination ou ecrire le log
 
 # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
-source /home/francois/development/automation/src/tools/log.fish
-or source /data/automation/tools/log.fish
+source /home/francois/development/automation/src/tools/log.fish 2> /dev/null
+or source /data/automation/tools/log.fish 2> /dev/null
 
 # Ecrit l'entete du log pour cette execution du script
 echo "

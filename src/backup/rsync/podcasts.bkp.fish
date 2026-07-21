@@ -6,11 +6,8 @@ set dst "bedroom:/media/256gb/podcasts/"
 set log "/var/log/automation/podcasts.rsync.trx.log"
 
 # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
-if test (status dirname) = "/data/automation"
-    source /data/automation/tools/log.fish
-else
-    source /home/francois/development/automation/src/tools/log.fish
-end
+source /home/francois/development/automation/src/tools/log.fish 2> /dev/null
+or source /data/automation/tools/log.fish 2> /dev/null
 
 # Ecrit l'entete du log pour cette execution du script
 echo "

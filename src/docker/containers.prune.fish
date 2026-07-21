@@ -1,7 +1,7 @@
 #! /usr/bin/env fish
 
-source /home/francois/development/automation/src/tools/log.fish
-or source /data/automation/tools/log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
+source /home/francois/development/automation/src/tools/log.fish 2> /dev/null
+or source /data/automation/tools/log.fish 2> /dev/null # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
 
 echo "
 

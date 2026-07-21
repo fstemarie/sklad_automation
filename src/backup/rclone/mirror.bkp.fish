@@ -5,8 +5,8 @@ set dst "filelu:/backup/sklad" # Variable qui contient le chemin du dossier de d
 set log "/var/log/automation/mirror.rclone.bkp.log" # Variable qui contient le chemin du fichier de log où les messages d'information et d'erreur seront enregistrés
 
 # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
-source /home/francois/development/automation/src/tools/log.fish
-or source /data/automation/tools/log.fish
+source /home/francois/development/automation/src/tools/log.fish 2> /dev/null
+or source /data/automation/tools/log.fish 2> /dev/null
 
 # Ecrit l'entete du log pour cette execution du script
 echo "

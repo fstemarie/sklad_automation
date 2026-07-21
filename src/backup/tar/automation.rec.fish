@@ -4,11 +4,9 @@ set src "/l/backup/automation" # Variable qui contient le chemin du dossier de s
 set dst "/data/automation" # Variable qui contient le chemin du dossier de destination
 set arch (command ls -1dr $src/automation.*.tar.zst | head -n1) # Variable qui contient le chemin de l'archive la plus récente
 
-if test (status dirname) = "/data/automation"
-    source /data/automation/tools/log.fish # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
-else
-    source /home/francois/development/automation/src/tools/log.fish
-end
+# inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
+source /home/francois/development/automation/src/tools/log.fish 2> /dev/null
+or source /data/automation/tools/log.fish 2> /dev/null
 
 # Ecrit l'entete du log pour cette execution du script
 echo "

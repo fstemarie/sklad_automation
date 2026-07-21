@@ -76,7 +76,7 @@ tar --create --verbose --zstd \
     --file "$arch" \
     --exclude 'log.txt*' --exclude 'updater.txt*' --exclude='DataProtection' \
     --directory (dirname "$src") \
-    (basename "$src")  2>&1 | tee -a "$log"
+    (basename "$src")  &| tee -a "$log"
 # Vérifie si la commande tar a réussi, si ce n'est pas le cas, log une erreur et quitte le script
 if test $pipestatus[1] -ne 0
     error "Echec de la sauvegarde"

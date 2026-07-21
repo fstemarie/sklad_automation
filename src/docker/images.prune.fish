@@ -11,4 +11,4 @@ echo "
 -------------------------------------
 " | tee -a "$log"
 
-docker image prune -a -f 2>&1 | tee -a "$log"
+docker image prune -a -f &| tee -a "$log"

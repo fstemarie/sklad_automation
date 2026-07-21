@@ -49,12 +49,12 @@ end
 
 # C'est une nouvelle sauvegarde complète, donc on supprime les anciens fichiers de snapshot
 info "Suppression du fichier de snapshot"
-rm -f "$full_snar" 2>&1 > /dev/null
-rm -f "$diff_snar" 2>&1 > /dev/null
+rm -f "$full_snar" &> /dev/null
+rm -f "$diff_snar" &> /dev/null
 info "Suppression du lien symlink vers la sauvegarde complète précédente"
-rm -f "$dst/development.full.tar.zst" 2>&1 | tee -a "$log"
+rm -f "$dst/development.full.tar.zst" &| tee -a "$log"
 info "Suppression de la sauvegarde différentielle"
-rm -f "$dst/development.diff.tar.zst" 2>&1 | tee -a "$log"
+rm -f "$dst/development.diff.tar.zst" &| tee -a "$log"
 
 # Creation de l'archive
 info "Creation de l'archive $full_arch"
@@ -65,7 +65,7 @@ tar --create --verbose --zstd \
     --exclude '.git' \
     --file "$full_arch" \
     --directory (dirname "$src") \
-    (basename "$src")  2>&1 | tee -a "$log"
+    (basename "$src")  &| tee -a "$log"
 # Vérifie si la commande tar a réussi, si ce n'est pas le cas, log une erreur et quitte le script
 if test $pipestatus[1] -ne 0
     error "Echec de la sauvegarde"
@@ -75,7 +75,7 @@ success "La sauvegarde a réussi"
 
 # Crée un lien symbolique vers la sauvegarde complète 
 info "Creation d'un lien symbolique vers la sauvegarde complète"
-ln -s "$full_arch" "$dst/development.full.tar.zst" 2>&1 | tee -a "$log"
+ln -s "$full_arch" "$dst/development.full.tar.zst" &| tee -a "$log"
 if test $pipestatus[1] -ne 0
     warning "La création du lien symbolique a échoué"
 end

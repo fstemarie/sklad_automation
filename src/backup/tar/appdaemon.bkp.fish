@@ -77,7 +77,7 @@ tar --create --verbose --zstd \
     --exclude '__pycache__' --exclude '.git' --exclude '.local' \
     --exclude '.venv' --exclude '.cache' --exclude "logs" \
     --directory (dirname "$src") \
-    (basename "$src")  2>&1 | tee -a "$log"
+    (basename "$src")  &| tee -a "$log"
 # Vérifie si la commande tar a réussi
 if test $pipestatus[1] -ne 0
     error "La sauvegarde a échoué"

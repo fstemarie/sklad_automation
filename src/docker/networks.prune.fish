@@ -11,4 +11,4 @@ echo "
 -------------------------------------
 " | tee -a "$log"
 
-docker network prune -f 2>&1 | tee -a "$log"
+docker network prune -f &| tee -a "$log"

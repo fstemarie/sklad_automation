@@ -52,7 +52,7 @@ end
 info "Creation de l'archive $arch"
 tar --create --verbose --zstd
     --directory (dirname "$src") \
-    (basename "$src")  2>&1 | tee -a "$log"
+    (basename "$src")  &| tee -a "$log"
 if test $pipestatus[1] -ne 0
     error "Echec de la sauvegarde"
     exit 1

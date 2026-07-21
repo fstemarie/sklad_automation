@@ -52,7 +52,7 @@ restic backup \
     --exclude ".venv" --exclude "node_modules" \
     --exclude ".git" --exclude "__pycache__" \
     --option s3.connections=10 --pack-size 16 \
-    .  2>&1 | tee -a "$log"
+    .  &| tee -a "$log"
 # Vérifie si la commande backup a réussi
 if test $pipestatus[1] -ne 0
     error "La sauvegarde a échoué"
@@ -68,7 +68,7 @@ restic forget \
     --tag development \
     --keep-daily 7 \
     --keep-weekly 4 \
-    --keep-monthly 6 2>&1 | tee -a "$log"
+    --keep-monthly 6 &| tee -a "$log"
 # Vérifie si la commande forget a réussi
 if test $pipestatus[1] -ne 0
     error "La suppression des snapshots a échouée"

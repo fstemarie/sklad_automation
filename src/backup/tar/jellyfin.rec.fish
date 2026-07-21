@@ -54,7 +54,7 @@ tar --extract --verbose --zstd \
     --same-permissions \
     --file "$arch" \
     --directory "$dst" \
-    --strip 1 2>&1 | tee -a "$log"
+    --strip 1 &| tee -a "$log"
 if test $pipestatus[1] -ne 0
     error "La restauration a échouée"
     exit 1

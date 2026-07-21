@@ -51,7 +51,7 @@ info "Restauration de l'archive $arch"
 tar --extract --verbose --zstd \
     --file "$arch" \
     --directory "$dst" \
-    --strip 1 2>&1 | tee -a "$log"
+    --strip 1 &| tee -a "$log"
 if test $status -ne 0
     error "La restauration a échoué"
     exit 1

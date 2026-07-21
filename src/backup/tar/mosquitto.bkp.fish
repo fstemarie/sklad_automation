@@ -76,7 +76,7 @@ tar --create --verbose --zstd \
     --file "$arch" \
     --exclude 'log' \
     --directory (dirname "$src") \
-    (basename "$src")  2>&1 | tee -a "$log"
+    (basename "$src")  &| tee -a "$log"
 # Vérifie que la création de l'archive a réussi
 if test $pipestatus[1] -ne 0
     error "La sauvegarde a échoué"

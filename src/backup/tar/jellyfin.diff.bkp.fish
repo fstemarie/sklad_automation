@@ -62,7 +62,7 @@ end
 # Donc, si on veut une sauvegarde différentielle, on doit utiliser le fichier de snapshot de la sauvegarde complète précédente pour ne sauvegarder que les fichiers qui ont changé depuis la dernière sauvegarde complète
 # Si on utilisait le fichier de snapshot de la sauvegarde différentielle précédente, nous aurions une sauvegarde incrémentale
 info "Copie le fichier de snapshot de la sauvegarde complète précédente pour l'utiliser comme base pour la sauvegarde différentielle"
-cp -f "$full_snar" "$diff_snar" 2>&1 | tee -a "$log"
+cp -f "$full_snar" "$diff_snar" &| tee -a "$log"
 
 # Arrête le container s'il est en cours d'exécution pour éviter les problèmes de fichiers ouverts pendant la sauvegarde
 if is_container_running $container
@@ -93,7 +93,7 @@ tar --create --zstd \
     --exclude 'cache' --exclude='metadata' --exclude 'log' --exclude 'transcoding-temp' --exclude '.aspnet' --exclude '.cache' \
     --exclude 'data/data' --exclude '.aspnet' --exclude '.cache' --exclude '.nv' \
     --file "$diff_arch" --directory (dirname "$src") \
-    (basename "$src") 2>&1 | tee -a "$log"
+    (basename "$src") &| tee -a "$log"
 # Verifie que la commande tar s'est bien exécutée
 if test $pipestatus[1] -ne 0
     error "La sauvegarde a échoué"
@@ -103,7 +103,7 @@ success "La sauvegarde a réussi"
 
 # Supprime le fichier de snapshot de la sauvegarde différentielle qui ne sera jamais utilisé
 info "Suppression du snapshot de la sauvegarde différentielle"
-sudo rm -f "$diff_snar" 2>&1 | tee -a "$log"
+sudo rm -f "$diff_snar" &| tee -a "$log"
 if test $pipestatus[1] -eq 0
     success "La suppression a réussi"
 else

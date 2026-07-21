@@ -51,11 +51,11 @@ end
 
 # C'est une nouvelle sauvegarde complète, donc on supprime les anciens fichiers de snapshot
 info "Suppression du fichier de snapshot"
-rm -f "$dst/jellyfin.*.snar" 2>&1 > /dev/null
+rm -f "$dst/jellyfin.*.snar" &> /dev/null
 info "Suppression du lien symlink vers la sauvegarde complète précédente"
-rm -f "$dst/jellyfin.full.tar.zst" 2>&1 | tee -a "$log"
+rm -f "$dst/jellyfin.full.tar.zst" &| tee -a "$log"
 info "Suppression de la sauvegarde différentielle"
-rm -f "$dst/jellyfin.diff.tar.zst" 2>&1 | tee -a "$log"
+rm -f "$dst/jellyfin.diff.tar.zst" &| tee -a "$log"
 
 # Arrête le container s'il est en cours d'exécution pour éviter les problèmes de fichiers ouverts pendant la sauvegarde
 if is_container_running $container
@@ -87,7 +87,7 @@ tar --create --zstd \
     --exclude 'data/data' --exclude '.aspnet' --exclude '.cache' --exclude '.nv' \
     --file "$arch" \
     --directory (dirname "$src") \
-    (basename "$src") 2>&1 | tee -a "$log"
+    (basename "$src") &| tee -a "$log"
 # Vérifie que la création de l'archive a réussi
 if test $pipestatus[1] -ne 0
     error "La sauvegarde a échoué"
@@ -97,7 +97,7 @@ success "La sauvegarde a réussi"
 
 # Crée un lien symbolique vers la sauvegarde complète 
 info "Creation d'un lien symbolique vers la sauvegarde complète"
-ln -s "$arch" "$dst/jellyfin.full.tar.zst" 2>&1 | tee -a "$log"
+ln -s "$arch" "$dst/jellyfin.full.tar.zst" &| tee -a "$log"
 if test $status -ne 0
     warning "La création du lien symbolique a échoué"
 end

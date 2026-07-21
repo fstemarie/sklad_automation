@@ -39,7 +39,7 @@ rsync \
     --no-compress --ignore-existing \
     --size-only --recursive --chmod u=rw,go=r \
     --mkpath --exclude='How Did This Get Made - Matinee Monday' \
-    "$src" "$dst" 2>&1 | tee -a "$log"
+    "$src" "$dst" &| tee -a "$log"
 # Vérifie si la commande tar a réussi
 if test $pipestatus[1] -ne 0
     error "Le transfer a échoué"

@@ -22,14 +22,14 @@ end
 
 info "Updating containers"
 pushd "$pjdir"
-docker compose pull 2>&1 | tee -a "$log"
+docker compose pull &| tee -a "$log"
 if test $status -ne 0
     error "There was an error during the update"
     exit 1
 end
 
 info "Restarting containers"
-docker compose up -d 2>&1 | tee -a "$log"
+docker compose up -d &| tee -a "$log"
 if test $status -ne 0
     error "There was an error while restarting containers"
     exit 1

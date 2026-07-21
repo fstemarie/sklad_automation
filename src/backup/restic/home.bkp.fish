@@ -51,7 +51,7 @@ restic backup \
     --tag home \
     --exclude '.cache' --exclude '.vscode*' --exclude 'development' \
     --option s3.connections=1 --pack-size 16 \
-    .  2>&1 | tee -a "$log"
+    .  &| tee -a "$log"
 # Vérifie si la commande backup a réussi
 if test $pipestatus[1] -ne 0
     error "Il y a eu une erreur lors de la création du snapshot"
@@ -67,7 +67,7 @@ restic forget \
     --tag home \
     --keep-daily 7 \
     --keep-weekly 4 \
-    --keep-monthly 6 2>&1 | tee -a "$log"
+    --keep-monthly 6 &| tee -a "$log"
 # Vérifie si la commande forget a réussi
 if test $pipestatus[1] -ne 0
     error "La suppression des snapshots a échouée"

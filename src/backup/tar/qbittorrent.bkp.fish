@@ -78,7 +78,7 @@ tar --create --verbose --zstd \
     --exclude "ipc-socket" --exclude "lockfile" --exclude "logs" \
     --exclude "qBittorrent-conf.json" --exclude "__pycache__" \
     --directory (dirname "$src") \
-    (basename "$src")  2>&1 | tee -a "$log"
+    (basename "$src")  &| tee -a "$log"
 # Vérifie que la création de l'archive a réussi
 if test $pipestatus[1] -ne 0
     error "La sauvegarde a échoué"

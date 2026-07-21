@@ -36,7 +36,7 @@ sshpass -f $secret_file rsync \
     --archive --verbose --delete --progress \
     --itemize-changes --human-readable --stats \
     --no-compress -e 'ssh -p 2222' \
-    "$src" "$dst" 2>&1 | tee -a "$log"
+    "$src" "$dst" &| tee -a "$log"
 # Vérifie si la commande tar a réussi
 if test $pipestatus[1] -ne 0
     error "La sauvegarde a échoué"

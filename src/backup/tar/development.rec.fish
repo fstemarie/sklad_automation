@@ -52,7 +52,7 @@ info "Restauration de l'archive complète $full_arch"
 tar --extract --verbose --zstd \
     --file "$full_arch" \
     --directory "$dst" \
-    --strip 1 2>&1 | tee -a "$log"
+    --strip 1 &| tee -a "$log"
 if test $pipestatus[1] -ne 0
     error "La restauration de l'archive complète a échouée"
     exit 1
@@ -64,7 +64,7 @@ if test -f "$diff_arch"
     tar --extract --verbose --zstd \
         --file "$diff_arch" \
         --directory "$dst" \
-        --strip 1 2>&1 | tee -a "$log"
+        --strip 1 &| tee -a "$log"
     if test $pipestatus[1] -ne 0
         error "La restauration de l'archive différentielle a échouée"
         exit 1

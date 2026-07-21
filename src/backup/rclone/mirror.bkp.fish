@@ -33,7 +33,7 @@ end
 info "Transfer des fichiers par rclone"
 rclone sync \
     --verbose --progress --combined - \
-    --delete-excluded --fast-list \
+    --update --delete-excluded --fast-list \
     "$src" "$dst" &| tee -a "$log"
 # Vérifie si la commande rclone a réussi
 if test $pipestatus[1] -ne 0

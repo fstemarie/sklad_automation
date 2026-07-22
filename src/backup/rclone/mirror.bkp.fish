@@ -1,7 +1,7 @@
 #! /usr/bin/fish
 
 set src "/l/backup/" # Variable qui contient le chemin du dossier à sauvegarder
-set dst "filelu-s5:/backup/sklad" # Variable qui contient le chemin du dossier de destination où les sauvegardes seront stockées
+set dst "filelu-s5:/backup.bkt/sklad" # Variable qui contient le chemin du dossier de destination où les sauvegardes seront stockées
 set log "/var/log/automation/mirror.rclone.bkp.log" # Variable qui contient le chemin du fichier de log où les messages d'information et d'erreur seront enregistrés
 
 # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log
@@ -32,8 +32,10 @@ end
 # Transfer rclone
 info "Transfer des fichiers par rclone"
 rclone sync \
-    --verbose --progress --combined - \
-    --update --delete-excluded --fast-list \
+    --transfers 5 --checkers 5 \
+    --verbose --fast-list \
+    --delete-excluded --ignore-existing \
+    --exclude "*.full.tar.zst" \
     "$src" "$dst" &| tee -a "$log"
 # Vérifie si la commande rclone a réussi
 if test $pipestatus[1] -ne 0

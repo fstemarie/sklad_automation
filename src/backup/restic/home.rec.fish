@@ -53,6 +53,7 @@ info "Recuperation du snapshot restic"
 restic restore latest \
     --host $hostname \
     --tag home \
+    --retry-lock 2h \
     --target "$dst"
 if test $pipestatus[1] -ne 0
     error "La restauration du snapshot a échoué"

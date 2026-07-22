@@ -1,7 +1,7 @@
 #! /usr/bin/fish
 
 set src "/l/backup/" # Variable qui contient le chemin du dossier à sauvegarder
-set dst "filelu:/backup/sklad" # Variable qui contient le chemin du dossier de destination où les sauvegardes seront stockées
+set dst "filelu-s5:/backup/sklad" # Variable qui contient le chemin du dossier de destination où les sauvegardes seront stockées
 set log "/var/log/automation/mirror.rclone.bkp.log" # Variable qui contient le chemin du fichier de log où les messages d'information et d'erreur seront enregistrés
 
 # inclut le fichier log.fish pour utiliser les fonctions d'écriture de log

@@ -16,7 +16,6 @@ set scripts \
     "docker/pirateisland.update.fish" \
     "docker/images.purge.fish"
 
-restic unlock
 for script in $scripts
     set -Ue __WARNINGS__
     if $script

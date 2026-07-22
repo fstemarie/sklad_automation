@@ -20,7 +20,6 @@ set scripts \
     "backup/rclone/mirror.bkp.fish" \
     "./duckdns.fish"
 
-restic unlock
 for script in $scripts
     set -Ue __WARNINGS__
     if $script

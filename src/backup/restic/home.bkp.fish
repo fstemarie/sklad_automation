@@ -49,6 +49,7 @@ pushd "$src"
 restic backup \
     --host $hostname \
     --tag home \
+    --retry-lock 2h \
     --exclude '.cache' --exclude '.vscode*' --exclude 'development' \
     --option s3.connections=1 --pack-size 16 \
     .  &| tee -a "$log"

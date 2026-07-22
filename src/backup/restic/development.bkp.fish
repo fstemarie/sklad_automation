@@ -43,15 +43,20 @@ else
 end
 #endregion
 
+while test -n "(restic list locks --json 2>/dev/null | string match -r '[a-f0-9]{8}')"
+    echo "Restic repository is locked. Waiting 10 seconds..."
+    sleep 10
+end
+
 #region Crée un snapshot avec restic en excluant les dossiers et fichiers qui ne sont pas nécessaires
 info "Creation du snapshot restic"
 cd "$src"
 restic backup \
     --host $hostname \
     --tag development \
+    --retry-lock 2h \
     --exclude ".venv" --exclude "node_modules" \
     --exclude ".git" --exclude "__pycache__" \
-    --option s3.connections=10 --pack-size 16 \
     .  &| tee -a "$log"
 # Vérifie si la commande backup a réussi
 if test $pipestatus[1] -ne 0

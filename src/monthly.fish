@@ -18,7 +18,6 @@ set scripts \
     "backup/tar/nodered.bkp.fish" \
     "backup/tar/qbittorrent.bkp.fish"
 
-restic unlock
 for script in $scripts
     set -Ue __WARNINGS__
     if $script
